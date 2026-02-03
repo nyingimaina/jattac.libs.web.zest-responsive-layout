@@ -67,6 +67,20 @@
   transform: translateX(100%); /* Start off-screen to the right */
 }
 
+/* Helper class to disable transitions */
+.noTransition {
+  transition: none !important;
+}
+
+/* Bounce animations for side pane */
+.sidePaneBounceIn {
+  animation: bounceInRight 0.3s forwards;
+}
+
+.sidePaneBounceOut {
+  animation: bounceOutRight 0.3s forwards;
+}
+
 .sidePaneOpenDesktop {
   width: var(--sidepane-width-desktop, 25vw); /* Default to 25vw, but allow override */
   transform: translateX(0); /* Slide in from the right */
@@ -85,6 +99,11 @@
   overflow-x: auto;
   transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
   box-sizing: border-box;
+}
+
+/* Helper class to disable transitions for detail pane */
+.detailPaneNoTransition {
+  transition: none !important;
 }
 
 .detailPaneShrunkDesktop {
@@ -131,9 +150,10 @@
   }
 }
 
+
 /* Keyframes for bounce effect (optional, as per discussion) */
 /* This can be applied to the sidePane and detailPane transitions if desired */
-/* @keyframes bounceInRight {
+@keyframes bounceInRight {
   0% {
     transform: translateX(100%);
   }
@@ -146,9 +166,9 @@
   100% {
     transform: translateX(0);
   }
-} */
+}
 
-/* @keyframes bounceOutRight {
+@keyframes bounceOutRight {
   0% {
     transform: translateX(0);
   }
@@ -161,4 +181,4 @@
   100% {
     transform: translateX(100%);
   }
-} */
+}
