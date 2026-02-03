@@ -1,0 +1,164 @@
+.container {
+  display: flex; /* Use flexbox for desktop layout */
+  width: 100%;
+  height: 100vh;
+  overflow: hidden; /* Hide overflow during transitions */
+}
+
+.title {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  font-size: 24px;
+  min-width: 25vw;
+  animation: fadeIn 0.5s ease-in-out; /* Keep existing animation */
+}
+
+.closer {
+  user-select: none;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Smooth transition for rotation */
+  font-weight: bold;
+}
+
+.closer:hover {
+  color: red;
+  animation: rotateClockwise 0.3s forwards;
+}
+
+.closer:hover:active {
+  animation: none; /* Prevent animation restart on click */
+}
+
+@keyframes rotateClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(180deg);
+  }
+}
+
+.closer:not(:hover) {
+  animation: rotateCounterclockwise 0.3s forwards;
+}
+
+@keyframes rotateCounterclockwise {
+  from {
+    transform: rotate(180deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* --- Side Pane Styles --- */
+.sidePane {
+  flex-shrink: 0;
+  background-color: #f0f0f0; /* Example background */
+  padding: 1rem;
+  box-sizing: border-box; /* Include padding in width */
+  overflow-y: auto; /* Allow scrolling for sidepane content */
+  position: relative; /* For z-index or other positioning if needed */
+
+  /* Default desktop closed state */
+  width: 0;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: translateX(100%); /* Start off-screen to the right */
+}
+
+.sidePaneOpenDesktop {
+  width: var(--sidepane-width-desktop, 25vw); /* Default to 25vw, but allow override */
+  transform: translateX(0); /* Slide in from the right */
+}
+
+.sidePaneClosedDesktop {
+  width: 0;
+  transform: translateX(100%); /* Slide out to the right */
+}
+
+/* --- Detail Pane Styles --- */
+.detailPane {
+  flex-grow: 1;
+  padding: 1rem;
+  background-color: #fff; /* Example background */
+  overflow-x: auto;
+  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  box-sizing: border-box;
+}
+
+.detailPaneShrunkDesktop {
+  /* On desktop, detail pane shrinks to accommodate sidepane */
+  width: var(--detailpane-width-desktop, 75vw); /* Default to 75vw */
+}
+
+/* --- Mobile Specific Styles --- */
+@media (max-width: 767px) {
+  .container {
+    flex-direction: column; /* Stack elements on mobile */
+  }
+
+  .sidePane {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    transform: translateX(100%); /* Start off-screen to the right */
+    z-index: 1000; /* Ensure it overlays content */
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .sidePaneOpenMobile {
+    transform: translateX(0); /* Slide in from the right */
+  }
+
+  .sidePaneClosedMobile {
+    transform: translateX(100%); /* Slide out to the right */
+  }
+
+  .detailPane {
+    width: 100%;
+    height: 100%; /* Take full height on mobile */
+    /* No shrinking, just obscured by sidepane */
+  }
+
+  .detailPaneHiddenMobile {
+    /* When sidepane is open on mobile, detail pane is functionally hidden */
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute; /* Take it out of flow */
+  }
+}
+
+/* Keyframes for bounce effect (optional, as per discussion) */
+/* This can be applied to the sidePane and detailPane transitions if desired */
+/* @keyframes bounceInRight {
+  0% {
+    transform: translateX(100%);
+  }
+  60% {
+    transform: translateX(-10%);
+  }
+  80% {
+    transform: translateX(5%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+} */
+
+/* @keyframes bounceOutRight {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10%);
+  }
+  40% {
+    transform: translateX(5%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+} */

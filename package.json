@@ -1,0 +1,33 @@
+{
+  "name": "jattac.libs.web.zest-responsive-layout",
+  "version": "1.0.0",
+  "description": "A responsive layout component for web applications, part of Jattac.Libs.Web.Zest.",
+  "main": "dist/ResponsiveLayout.js",
+  "types": "dist/ResponsiveLayout.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "react",
+    "responsive",
+    "layout",
+    "zest",
+    "jattac"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "cssnano": "^7.1.2",
+    "postcss": "^8.5.6",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rollup": "^4.57.1",
+    "rollup-plugin-dts": "^6.3.0",
+    "rollup-plugin-postcss": "^4.0.2",
+    "typescript": "^5.0.0"
+  }
+}
