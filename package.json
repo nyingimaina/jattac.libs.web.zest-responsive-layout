@@ -1,7 +1,7 @@
 {
   "name": "jattac.libs.web.zest-responsive-layout",
-  "version": "1.0.0",
-  "description": "A responsive layout component for web applications, part of Jattac.Libs.Web.Zest.",
+  "version": "1.0.1",
+  "description": "A highly performant and flexible React component for building responsive layouts with a dynamic side pane and main content area. Features customizable desktop widths, bounce animations, and a configurable mobile breakpoint for seamless user experiences across devices.",
   "main": "dist/ZestResponsiveLayout.js",
   "module": "dist/ZestResponsiveLayout.esm.js",
   "types": "dist/ZestResponsiveLayout.d.ts",
@@ -12,11 +12,28 @@
     "react",
     "responsive",
     "layout",
-    "zest",
-    "jattac"
+    "sidebar",
+    "pane",
+    "dynamic",
+    "ui",
+    "component",
+    "flexbox",
+    "css-modules",
+    "animations",
+    "typescript",
+    "jattac",
+    "zest"
   ],
   "author": "",
   "license": "ISC",
+  "homepage": "https://github.com/Jattac/jattac.libs.web.zest-responsive-layout#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jattac/jattac.libs.web.zest-responsive-layout.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jattac/jattac.libs.web.zest-responsive-layout/issues"
+  },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-terser": "^0.4.4",
