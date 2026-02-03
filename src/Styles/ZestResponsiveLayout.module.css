@@ -63,7 +63,8 @@
 
   /* Default desktop closed state */
   width: 0;
-  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  flex-basis: 0;
+  transition: transform 0.3s ease-in-out;
   transform: translateX(100%); /* Start off-screen to the right */
 }
 
@@ -82,11 +83,13 @@
 }
 
 .sidePaneOpenDesktop {
+  flex-basis: var(--sidepane-width-desktop, 25vw);
   width: var(--sidepane-width-desktop, 25vw); /* Default to 25vw, but allow override */
   transform: translateX(0); /* Slide in from the right */
 }
 
 .sidePaneClosedDesktop {
+  flex-basis: 0;
   width: 0;
   transform: translateX(100%); /* Slide out to the right */
 }
@@ -94,10 +97,11 @@
 /* --- Detail Pane Styles --- */
 .detailPane {
   flex-grow: 1;
+  flex-basis: 0; /* Ensures it fills remaining space */
   padding: 1rem;
   background-color: #fff; /* Example background */
   overflow-x: auto;
-  transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out;
   box-sizing: border-box;
 }
 
@@ -107,8 +111,8 @@
 }
 
 .detailPaneShrunkDesktop {
-  /* On desktop, detail pane shrinks to accommodate sidepane */
-  width: var(--detailpane-width-desktop, 75vw); /* Default to 75vw */
+  /* On desktop, detail pane moves to accommodate sidepane */
+  transform: translateX(calc(-1 * var(--sidepane-width-desktop, 25vw)));
 }
 
 /* --- Mobile Specific Styles --- */

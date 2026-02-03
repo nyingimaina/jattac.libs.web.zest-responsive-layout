@@ -1,6 +1,6 @@
 import React, { PureComponent } from "react";
 // import HorizontalDivider from "../../Divider/UI/HorizontalDivider";
-import styles from "../Styles/ResponsiveLayout.module.css";
+import styles from "../Styles/ZestResponsiveLayout.module.css";
 
 interface IProps {
   sidePane: {

@@ -7,16 +7,16 @@ import terser from '@rollup/plugin-terser'; // Correct import for @rollup/plugin
 
 export default [
   {
-    input: 'src/UI/ResponsiveLayout.tsx',
+    input: 'src/UI/ZestResponsiveLayout.tsx',
     output: [
       {
-        file: 'dist/ResponsiveLayout.js',
+        file: 'dist/ZestResponsiveLayout.js',
         format: 'cjs',
         sourcemap: true,
         plugins: [terser()], // Minify CJS output
       },
       {
-        file: 'dist/ResponsiveLayout.esm.js',
+        file: 'dist/ZestResponsiveLayout.esm.js',
         format: 'esm',
         sourcemap: true,
         plugins: [terser()], // Minify ESM output
@@ -40,8 +40,8 @@ export default [
   },
   {
     // For type declarations
-    input: './dist/ResponsiveLayout.d.ts', // Corrected path
-    output: [{ file: 'dist/ResponsiveLayout.d.ts', format: 'esm' }],
+    input: './dist/ZestResponsiveLayout.d.ts', // Corrected path
+    output: [{ file: 'dist/ZestResponsiveLayout.d.ts', format: 'esm' }],
     plugins: [dts()],
   },
 ];

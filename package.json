@@ -2,9 +2,9 @@
   "name": "jattac.libs.web.zest-responsive-layout",
   "version": "1.0.0",
   "description": "A responsive layout component for web applications, part of Jattac.Libs.Web.Zest.",
-  "main": "dist/ResponsiveLayout.js",
-  "module": "dist/ResponsiveLayout.esm.js",
-  "types": "dist/ResponsiveLayout.d.ts",
+  "main": "dist/ZestResponsiveLayout.js",
+  "module": "dist/ZestResponsiveLayout.esm.js",
+  "types": "dist/ZestResponsiveLayout.d.ts",
   "scripts": {
     "build": "rollup -c"
   },
