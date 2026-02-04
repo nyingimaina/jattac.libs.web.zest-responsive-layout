@@ -1,116 +1,92 @@
-/* ---------- Container ---------- */
 .container {
   display: flex;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
-}
-
-/* ---------- Title ---------- */
-.title {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.75rem;
-  font-size: 1.2rem;
-}
-
-.closer {
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* ---------- Side Pane ---------- */
-.sidePane {
-  display: flex;
-  flex-direction: column; /* ensures scrollable content works */
-  background: #fff; /* corporate clean */
-  box-sizing: border-box;
-  overflow: hidden; /* scroll handled by child wrapper */
-  transition:
-    flex-basis 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.2s ease;
+  height: 100%;
   position: relative;
-}
-
-/* Scrollable content wrapper */
-.sidePaneContent {
-  flex: 1;
-  min-height: 0; /* critical for flex scroll */
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch; /* smooth iOS scrolling */
-}
-
-/* Desktop states */
-.sidePaneOpenDesktop {
-  flex-basis: var(--sidepane-width-desktop, 25vw);
-  padding: 1rem;
-  opacity: 1;
-  border-left: 1px solid #ddd; /* clear separation from main content */
-}
-
-.sidePaneClosedDesktop {
-  flex-basis: 0;
-  padding: 0;
-  opacity: 0;
   overflow: hidden;
 }
 
-/* ---------- Detail Pane ---------- */
 .detailPane {
-  flex-grow: 1;
-  padding: 1rem;
-  background: #fff;
-  box-sizing: border-box;
   overflow: auto;
 }
 
-/* ---------- Mobile Overlay ---------- */
-@media (max-width: 767px) {
-  .container {
-    position: relative;
-    height: 100dvh; /* modern safe viewport */
-  }
-
-  .sidePane {
-    position: fixed;
-    inset: 0;
-    background-color: #fff;
-    z-index: 1000;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    padding-top: calc(1rem + env(safe-area-inset-top));
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-    padding-left: calc(1rem + env(safe-area-inset-left));
-    padding-right: calc(1rem + env(safe-area-inset-right));
-  }
-
-  .sidePaneOpenMobile {
-    transform: translateX(0);
-  }
-
-  .sidePaneClosedMobile {
-    transform: translateX(100%);
-  }
-
-  .detailPaneHiddenMobile {
-    visibility: hidden;
-    pointer-events: none;
-  }
+.sidePane {
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05); /* subtle polish */
 }
 
-/* ---------- Optional Mobile Bounce ---------- */
-.bounceIn {
-  animation: bounceInRight 0.35s ease;
+.desktopPane {
+  border-left: 1px solid #e0e0e0;
+  transition:
+    width 250ms ease,
+    transform 250ms ease,
+    opacity 250ms ease;
 }
 
-@keyframes bounceInRight {
+.mobileOverlay {
+  position: fixed;
+  top: env(safe-area-inset-top);
+  bottom: env(safe-area-inset-bottom);
+  left: env(safe-area-inset-left);
+  right: env(safe-area-inset-right);
+  z-index: 1000;
+  transition:
+    transform 350ms ease,
+    opacity 350ms ease;
+}
+
+.bounce {
+  animation: bounceIn 300ms ease forwards;
+}
+
+@keyframes bounceIn {
   0% {
     transform: translateX(100%);
   }
-  70% {
-    transform: translateX(-6%);
+  60% {
+    transform: translateX(-10%);
+  }
+  80% {
+    transform: translateX(5%);
   }
   100% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
+}
+
+.sidePaneHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition:
+    transform 150ms ease,
+    color 150ms ease;
+}
+
+.closeButton:hover {
+  transform: scale(1.1);
+  color: #555;
+}
+
+.closeButton:active {
+  transform: scale(0.95);
+  color: #333;
+}
+
+.sidePaneContent {
+  overflow: auto;
+  flex: 1;
+  padding: 1rem;
 }

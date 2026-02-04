@@ -1,12 +1,12 @@
-import React, { PureComponent } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styles from "../Styles/ZestResponsiveLayout.module.css";
 
-interface IProps {
+export interface IProps {
   sidePane: {
     visible: boolean;
     widthRems?: number;
     pane: React.ReactNode;
-    title: React.ReactNode;
+    title?: React.ReactNode;
     onClose?: () => void;
   };
   detailPane: React.ReactNode;
@@ -15,73 +15,97 @@ interface IProps {
   mobileBreakpointPx?: number;
 }
 
-export default class ZestResponsiveLayout extends PureComponent<IProps> {
-  // SSR-safe
-  get isMobile(): boolean {
-    if (typeof window === "undefined") return false;
-    return window.innerWidth < (this.props.mobileBreakpointPx ?? 768);
-  }
+export const ZestResponsiveLayout: React.FC<IProps> = ({
+  sidePane,
+  detailPane,
+  desktopSidePaneWidth,
+  enableBounceAnimation = true,
+  mobileBreakpointPx = 768,
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  render() {
-    const {
-      sidePane,
-      detailPane,
-      desktopSidePaneWidth,
-      enableBounceAnimation,
-    } = this.props;
+  const handleResize = () => {
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    setIsMobile(window.innerWidth / rem <= mobileBreakpointPx / rem);
+  };
 
-    const isMobile = this.isMobile;
-    const isOpen = sidePane.visible;
-
-    const containerStyle: React.CSSProperties = {
-      ...(desktopSidePaneWidth && {
-        "--sidepane-width-desktop": desktopSidePaneWidth,
-      }),
-    } as React.CSSProperties;
-
-    // Classes
-    let sidePaneClass = styles.sidePane;
-    let detailPaneClass = styles.detailPane;
-
-    if (isMobile) {
-      sidePaneClass += isOpen
-        ? ` ${styles.sidePaneOpenMobile}`
-        : ` ${styles.sidePaneClosedMobile}`;
-
-      if (isOpen) {
-        detailPaneClass += ` ${styles.detailPaneHiddenMobile}`;
-      }
-    } else {
-      sidePaneClass += isOpen
-        ? ` ${styles.sidePaneOpenDesktop}`
-        : ` ${styles.sidePaneClosedDesktop}`;
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (
+      sidePane.visible &&
+      isMobile &&
+      overlayRef.current &&
+      !overlayRef.current.contains(e.target as Node)
+    ) {
+      sidePane.onClose?.();
     }
+  };
 
-    if (enableBounceAnimation && isMobile && isOpen) {
-      sidePaneClass += ` ${styles.bounceIn}`;
-    }
+  useEffect(() => {
+    setHydrated(true);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [sidePane.visible, isMobile]);
 
-    return (
-      <div className={styles.container} style={containerStyle}>
-        {/* Main content first → ensures side pane renders on right */}
-        <main className={detailPaneClass}>{detailPane}</main>
+  const sideWidth = sidePane.widthRems
+    ? `${sidePane.widthRems}rem`
+    : desktopSidePaneWidth || "25%";
 
-        <aside className={sidePaneClass}>
-          {isOpen && (
-            <>
-              <div className={styles.title}>
-                <div>{sidePane.title}</div>
-                {sidePane.onClose && (
-                  <div className={styles.closer} onClick={sidePane.onClose}>
-                    X
-                  </div>
-                )}
-              </div>
-              <div className={styles.sidePaneContent}>{sidePane.pane}</div>
-            </>
-          )}
-        </aside>
+  return (
+    <div className={styles.container}>
+      <div
+        className={styles.detailPane}
+        style={{
+          flex:
+            !isMobile && sidePane.visible
+              ? `0 0 calc(100% - ${sideWidth})`
+              : "1 1 100%",
+          opacity: hydrated && !isMobile ? 1 : undefined,
+          transition: hydrated
+            ? "flex 250ms ease, opacity 250ms ease"
+            : undefined,
+        }}
+      >
+        {detailPane}
       </div>
-    );
-  }
-}
+
+      {sidePane.visible && (
+        <div
+          ref={overlayRef}
+          className={`${styles.sidePane} ${
+            isMobile ? styles.mobileOverlay : styles.desktopPane
+          } ${enableBounceAnimation && hydrated ? styles.bounce : ""}`}
+          style={{
+            width: isMobile ? "100%" : sideWidth,
+          }}
+        >
+          {sidePane.title && (
+            <div className={styles.sidePaneHeader}>
+              {sidePane.title}
+              {sidePane.onClose && (
+                <button
+                  className={styles.closeButton}
+                  onClick={sidePane.onClose}
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          )}
+          {!sidePane.title && sidePane.onClose && (
+            <button className={styles.closeButton} onClick={sidePane.onClose}>
+              ×
+            </button>
+          )}
+          <div className={styles.sidePaneContent}>{sidePane.pane}</div>
+        </div>
+      )}
+    </div>
+  );
+};
