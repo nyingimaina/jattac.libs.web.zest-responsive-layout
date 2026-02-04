@@ -28,6 +28,24 @@ npm install jattac.libs.web.zest-responsive-layout
 yarn add jattac.libs.web.zest-responsive-layout
 ```
 
+## Peer Dependencies
+
+This library relies on `React` and `ReactDOM` to be provided by your application. Please ensure you have them installed:
+
+```bash
+npm install react react-dom
+# or
+yarn add react react-dom
+```
+
+If you are using TypeScript, you will also need their type definitions:
+
+```bash
+npm install --save-dev @types/react @types/react-dom
+# or
+yarn add --dev @types/react @types/react-dom
+```
+
 ## Usage
 
 The `ZestResponsiveLayout` component provides a flexible structure for displaying a main content area alongside a collapsible side pane, adapting its behavior for both desktop and mobile views.
