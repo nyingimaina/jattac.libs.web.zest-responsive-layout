@@ -4,13 +4,13 @@
   "description": "A highly performant and flexible React component for building responsive layouts with a dynamic side pane and main content area. Features customizable desktop widths, bounce animations, and a configurable mobile breakpoint for seamless user experiences across devices.",
   "author": "Jattac",
   "license": "ISC",
-  "homepage": "https://github.com/Jattac/jattac.libs.web.zest-responsive-layout#readme",
+  "homepage": "https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jattac/jattac.libs.web.zest-responsive-layout.git"
+    "url": "git+https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout.git"
   },
   "bugs": {
-    "url": "https://github.com/Jattac/jattac.libs.web.zest-responsive-layout/issues"
+    "url": "https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/issues"
   },
   "main": "./dist/ZestResponsiveLayout.js",
   "module": "./dist/ZestResponsiveLayout.esm.js",

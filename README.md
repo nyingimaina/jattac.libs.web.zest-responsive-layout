@@ -40,12 +40,12 @@ const App = () => (
 
 Ready to dive deeper? Explore our documentation:
 
-1.  **[The Cookbook (Examples)](./docs/examples.md)** - **Start here!** Learn by building practical recipes.
-2.  [Features Showcase](./docs/features.md) - See what else Zest can do.
-3.  [API Reference](./docs/api.md) - Technical specifications and prop tables.
-4.  [Configuration](./docs/configuration.md) - Deep-dive into customization.
-5.  [Development Guide](./docs/development.md) - For contributors and advanced users.
+1.  **[The Cookbook (Examples)](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/examples.md)** - **Start here!** Learn by building practical recipes.
+2.  [Features Showcase](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/features.md) - See what else Zest can do.
+3.  [API Reference](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/api.md) - Technical specifications and prop tables.
+4.  [Configuration](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/configuration.md) - Deep-dive into customization.
+5.  [Development Guide](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/development.md) - For contributors and advanced users.
 
 ---
 
-[Next: The Cookbook (Examples) →](./docs/examples.md)
+[Next: The Cookbook (Examples) →](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/examples.md)
