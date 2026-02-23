@@ -6,6 +6,7 @@ interface SidePaneProps {
   pane: React.ReactNode;
   title?: React.ReactNode;
   onClose?: () => void;
+  keepMounted?: boolean;
   isMobile: boolean;
   enableBounceAnimation: boolean;
   hydrated: boolean;
@@ -19,6 +20,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       pane,
       title,
       onClose,
+      keepMounted = false,
       isMobile,
       enableBounceAnimation,
       hydrated,
@@ -26,37 +28,40 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     },
     ref
   ) => {
-    if (!visible) return null;
-
     return (
       <div
         ref={ref}
         className={`${styles.sidePane} ${
           isMobile ? styles.mobileOverlay : styles.desktopPane
-        } ${enableBounceAnimation && hydrated ? styles.bounce : ""}`}
+        } ${enableBounceAnimation && hydrated && visible ? styles.bounce : ""} ${
+          !visible ? styles.sidePaneHidden : ""
+        }`}
         style={{
           width: isMobile ? "100%" : sideWidth,
         }}
       >
-        {title && (
-          <div className={styles.sidePaneHeader}>
-            {title}
-            {onClose && (
+        {(visible || keepMounted) && (
+          <>
+            {title && (
+              <div className={styles.sidePaneHeader}>
+                {title}
+                {onClose && (
+                  <button className={styles.closeButton} onClick={onClose}>
+                    ×
+                  </button>
+                )}
+              </div>
+            )}
+            {!title && onClose && (
               <button className={styles.closeButton} onClick={onClose}>
                 ×
               </button>
             )}
-          </div>
+            <div className={styles.sidePaneContent}>{pane}</div>
+          </>
         )}
-        {!title && onClose && (
-          <button className={styles.closeButton} onClick={onClose}>
-            ×
-          </button>
-        )}
-        <div className={styles.sidePaneContent}>{pane}</div>
       </div>
     );
   }
 );
-
 SidePane.displayName = "SidePane";

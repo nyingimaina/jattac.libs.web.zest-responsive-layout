@@ -6,6 +6,7 @@ export interface IProps {
         pane: React.ReactNode;
         title?: React.ReactNode;
         onClose?: () => void;
+        keepMounted?: boolean;
     };
     detailPane: React.ReactNode;
     desktopSidePaneWidth?: string;

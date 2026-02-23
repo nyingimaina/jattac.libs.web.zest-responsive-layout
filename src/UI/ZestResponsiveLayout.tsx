@@ -13,6 +13,7 @@ export interface IProps {
     pane: React.ReactNode;
     title?: React.ReactNode;
     onClose?: () => void;
+    keepMounted?: boolean;
   };
   detailPane: React.ReactNode;
   desktopSidePaneWidth?: string;
@@ -74,6 +75,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         pane={sidePane.pane}
         title={sidePane.title}
         onClose={sidePane.onClose}
+        keepMounted={sidePane.keepMounted}
         isMobile={isMobile}
         enableBounceAnimation={enableBounceAnimation}
         hydrated={hydrated}

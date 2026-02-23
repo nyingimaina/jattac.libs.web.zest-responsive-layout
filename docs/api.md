@@ -36,6 +36,7 @@ Technical specifications for the `ZestResponsiveLayout` component.
 | `pane` | `React.ReactNode` | **Required** | The content to render inside the sidebar. |
 | `title` | `React.ReactNode` | `undefined` | Header title for the sidebar. |
 | `onClose` | `() => void` | `undefined` | Callback triggered by close button or overlay click. |
+| `keepMounted` | `boolean` | `false` | When `true`, the sidebar's content remains in the DOM even when hidden (`visible={false}`). Useful for persisting state in forms or maps, but may impact performance if content is heavy. |
 | `widthRems` | `number` | `undefined` | (Legacy) Sets sidebar width in rems. Prefer `desktopSidePaneWidth`. |
 
 ---

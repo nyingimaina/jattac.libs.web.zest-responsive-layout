@@ -46,6 +46,19 @@ You can customize how users interact with the layout through several boolean fla
 *   **`closeOnDesktopOverlayClick`**: Set to `false` for "Drawer-style" sidebars where accidental clicks shouldn't close the pane.
 *   **`enableBounceAnimation`**: Set to `false` for high-density, serious enterprise applications where utility is prioritized over "delight".
 
+#### Advanced State Management: `sidePane.keepMounted`
+By default, Zest is designed to be **stateless and clean**. When `sidePane.visible` is `false`, the children of the sidebar are completely unmounted from the DOM. This ensures that:
+1.  **No Stale Data:** Re-opening the sidebar always shows the latest state.
+2.  **Performance:** Background processes (like timers or data polling) in hidden components are stopped.
+
+**When to use `keepMounted: true`:**
+*   **Forms:** If a user is filling out a multi-step form and closes the sidebar to check something in the main pane, you want their input to be there when they return.
+*   **Heavy Components:** If your sidebar contains a component that is expensive to initialize (like a 3D model or a large data grid), keeping it mounted avoids the "loading" flicker on re-open.
+
+**When to avoid it:**
+*   **Simple Navigations:** For basic menus or lists, unloading ensures a fresh UI every time.
+*   **Resource Heavy Pages:** If you have many sidebars with heavy content, keeping them all mounted can lead to high memory usage.
+
 ---
 
 [← Previous: API Reference](./api.md) | [Next: Development →](./development.md)

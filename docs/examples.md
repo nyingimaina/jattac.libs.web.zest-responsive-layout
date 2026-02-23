@@ -8,6 +8,7 @@ Welcome to the Zest Cookbook! This guide is designed to take you from "Zero to E
 *   [Adjusting the Mobile Experience](#adjusting-the-mobile-experience)
 *   [Mastering Animations](#mastering-animations)
 *   [Configuring the Desktop Overlay](#configuring-the-desktop-overlay)
+*   [Persisting Sidebar State](#persisting-sidebar-state)
 
 ---
 
@@ -122,6 +123,27 @@ const BasicApp = () => {
 />
 ```
 *For a full list of interaction props, see the [Configuration Guide](./configuration.md).*
+
+---
+
+### Persisting Sidebar State
+**Problem:** I have a complex form or a map in my sidebar. When the user closes and re-opens the sidebar, I don't want them to lose their progress or have the component re-initialize.
+
+**Solution:** Use the `keepMounted` flag in the `sidePane` configuration.
+
+```tsx
+<ZestResponsiveLayout
+  sidePane={{
+    visible: isOpen,
+    keepMounted: true, // Content stays in DOM even when hidden
+    title: "Edit Profile",
+    pane: <MyComplexForm />, // Form state is preserved
+    onClose: () => setIsOpen(false)
+  }}
+  detailPane={<main>Main Content Area</main>}
+/>
+```
+*By default, Zest unloads sidebar content to prevent stale state. Use `keepMounted` only when necessary to preserve stateful components.*
 
 ---
 

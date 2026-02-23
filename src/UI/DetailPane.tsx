@@ -40,13 +40,11 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
       }}
     >
       {children}
-      {showOverlay && (
-        <div 
-          className={styles.detailOverlay} 
-          onClick={onOverlayClick} 
-          aria-hidden="true"
-        />
-      )}
+      <div 
+        className={`${styles.detailOverlay} ${showOverlay ? styles.detailOverlayVisible : ""}`} 
+        onClick={onOverlayClick} 
+        aria-hidden="true"
+      />
     </div>
   );
 };

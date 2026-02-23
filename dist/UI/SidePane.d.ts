@@ -4,6 +4,7 @@ interface SidePaneProps {
     pane: React.ReactNode;
     title?: React.ReactNode;
     onClose?: () => void;
+    keepMounted?: boolean;
     isMobile: boolean;
     enableBounceAnimation: boolean;
     hydrated: boolean;
