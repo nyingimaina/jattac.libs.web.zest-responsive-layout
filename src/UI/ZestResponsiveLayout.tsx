@@ -1,5 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import styles from "../Styles/ZestResponsiveLayout.module.css";
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useIsHydrated } from "../hooks/useIsHydrated";
+import { useOutsideClick } from "../hooks/useOutsideClick";
+import { DetailPane } from "./DetailPane";
+import { SidePane } from "./SidePane";
 
 export interface IProps {
   sidePane: {
@@ -11,47 +16,39 @@ export interface IProps {
   };
   detailPane: React.ReactNode;
   desktopSidePaneWidth?: string;
+  desktopDetailPaneWidth?: string;
   enableBounceAnimation?: boolean;
   mobileBreakpointPx?: number;
+  enableDesktopOverlay?: boolean;
+  closeOnDesktopOverlayClick?: boolean;
 }
 
 export const ZestResponsiveLayout: React.FC<IProps> = ({
   sidePane,
   detailPane,
   desktopSidePaneWidth,
+  desktopDetailPaneWidth,
   enableBounceAnimation = true,
   mobileBreakpointPx = 768,
+  enableDesktopOverlay = true,
+  closeOnDesktopOverlayClick = true,
 }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
+  
+  const hydrated = useIsHydrated();
+  const isMobile = useIsMobile(mobileBreakpointPx);
+  
+  useOutsideClick(
+    overlayRef, 
+    () => sidePane.onClose?.(), 
+    sidePane.visible && isMobile
+  );
 
-  const handleResize = () => {
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    setIsMobile(window.innerWidth / rem <= mobileBreakpointPx / rem);
-  };
-
-  const handleOutsideClick = (e: MouseEvent) => {
-    if (
-      sidePane.visible &&
-      isMobile &&
-      overlayRef.current &&
-      !overlayRef.current.contains(e.target as Node)
-    ) {
+  const handleOverlayClick = () => {
+    if (closeOnDesktopOverlayClick) {
       sidePane.onClose?.();
     }
   };
-
-  useEffect(() => {
-    setHydrated(true);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, [sidePane.visible, isMobile]);
 
   const sideWidth = sidePane.widthRems
     ? `${sidePane.widthRems}rem`
@@ -59,53 +56,29 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
 
   return (
     <div className={styles.container}>
-      <div
-        className={styles.detailPane}
-        style={{
-          flex:
-            !isMobile && sidePane.visible
-              ? `0 0 calc(100% - ${sideWidth})`
-              : "1 1 100%",
-          opacity: hydrated && !isMobile ? 1 : undefined,
-          transition: hydrated
-            ? "flex 250ms ease, opacity 250ms ease"
-            : undefined,
-        }}
+      <DetailPane
+        isMobile={isMobile}
+        isSidePaneVisible={sidePane.visible}
+        sideWidth={sideWidth}
+        desktopDetailPaneWidth={desktopDetailPaneWidth}
+        hydrated={hydrated}
+        enableDesktopOverlay={enableDesktopOverlay}
+        onOverlayClick={handleOverlayClick}
       >
         {detailPane}
-      </div>
+      </DetailPane>
 
-      {sidePane.visible && (
-        <div
-          ref={overlayRef}
-          className={`${styles.sidePane} ${
-            isMobile ? styles.mobileOverlay : styles.desktopPane
-          } ${enableBounceAnimation && hydrated ? styles.bounce : ""}`}
-          style={{
-            width: isMobile ? "100%" : sideWidth,
-          }}
-        >
-          {sidePane.title && (
-            <div className={styles.sidePaneHeader}>
-              {sidePane.title}
-              {sidePane.onClose && (
-                <button
-                  className={styles.closeButton}
-                  onClick={sidePane.onClose}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          )}
-          {!sidePane.title && sidePane.onClose && (
-            <button className={styles.closeButton} onClick={sidePane.onClose}>
-              ×
-            </button>
-          )}
-          <div className={styles.sidePaneContent}>{sidePane.pane}</div>
-        </div>
-      )}
+      <SidePane
+        ref={overlayRef}
+        visible={sidePane.visible}
+        pane={sidePane.pane}
+        title={sidePane.title}
+        onClose={sidePane.onClose}
+        isMobile={isMobile}
+        enableBounceAnimation={enableBounceAnimation}
+        hydrated={hydrated}
+        sideWidth={sideWidth}
+      />
     </div>
   );
 };
