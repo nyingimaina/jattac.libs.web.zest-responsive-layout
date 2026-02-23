@@ -11,6 +11,8 @@ interface SidePaneProps {
   enableBounceAnimation: boolean;
   hydrated: boolean;
   sideWidth: string;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
@@ -25,6 +27,8 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       enableBounceAnimation,
       hydrated,
       sideWidth,
+      className,
+      style,
     },
     ref
   ) => {
@@ -35,8 +39,9 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
           isMobile ? styles.mobileOverlay : styles.desktopPane
         } ${enableBounceAnimation && hydrated && visible ? styles.bounce : ""} ${
           !visible ? styles.sidePaneHidden : ""
-        }`}
+        } ${className || ""}`}
         style={{
+          ...style,
           width: isMobile ? "100%" : sideWidth,
         }}
       >

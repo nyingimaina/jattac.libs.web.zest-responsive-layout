@@ -9,6 +9,8 @@ interface SidePaneProps {
     enableBounceAnimation: boolean;
     hydrated: boolean;
     sideWidth: string;
+    className?: string;
+    style?: React.CSSProperties;
 }
 export declare const SidePane: React.ForwardRefExoticComponent<SidePaneProps & React.RefAttributes<HTMLDivElement>>;
 export {};

@@ -1,6 +1,6 @@
 # Zest Cookbook 🍳
 
-Welcome to the Zest Cookbook! This guide is designed to take you from "Zero to Expert" by solving real-world layout challenges.
+Welcome to the Zest Cookbook (v2.0.0)! This guide is designed to take you from "Zero to Expert" by solving real-world layout challenges.
 
 ### Table of Contents
 *   [The Basic Layout](#the-basic-layout)
@@ -9,6 +9,7 @@ Welcome to the Zest Cookbook! This guide is designed to take you from "Zero to E
 *   [Mastering Animations](#mastering-animations)
 *   [Configuring the Desktop Overlay](#configuring-the-desktop-overlay)
 *   [Persisting Sidebar State](#persisting-sidebar-state)
+*   [Custom Styling Hooks](#custom-styling-hooks)
 
 ---
 
@@ -33,16 +34,15 @@ const BasicApp = () => {
       sidePane={{
         visible: isOpen,
         title: "Menu",
-        pane: <ul><li>Home</li><li>Profile</li></ul>,
+        content: <ul><li>Home</li><li>Profile</li></ul>,
         onClose: () => setIsOpen(false)
       }}
-      detailPane={
-        <div>
-          <button onClick={() => setIsOpen(true)}>Open Menu</button>
-          <p>Main content goes here.</p>
-        </div>
-      }
-    />
+    >
+      <div>
+        <button onClick={() => setIsOpen(true)}>Open Menu</button>
+        <p>Main content goes here.</p>
+      </div>
+    </ZestResponsiveLayout>
   );
 };
 ```
@@ -52,18 +52,18 @@ const BasicApp = () => {
 ### Customizing Desktop Widths
 **Problem:** My sidebar needs to be exactly 300px, or a specific percentage of the screen.
 
-**Solution:** Use `desktopSidePaneWidth` and `desktopDetailPaneWidth`.
+**Solution:** Use `sidePaneWidth`.
 
 ```tsx
 <ZestResponsiveLayout
-  desktopSidePaneWidth="300px"
-  desktopDetailPaneWidth="calc(100% - 300px)"
+  sidePaneWidth="300px"
   sidePane={{
     visible: true,
-    pane: <nav>Fixed Width Sidebar</nav>
+    content: <nav>Fixed Width Sidebar</nav>
   }}
-  detailPane={<main>Dynamic Content</main>}
-/>
+>
+  <main>Dynamic Content</main>
+</ZestResponsiveLayout>
 ```
 *Learn more about width calculations in the [API Reference](./api.md).*
 
@@ -79,10 +79,11 @@ const BasicApp = () => {
   mobileBreakpointPx={1024} // Tablet landscape and below
   sidePane={{
     visible: true,
-    pane: <nav>Responsive Menu</nav>
+    content: <nav>Responsive Menu</nav>
   }}
-  detailPane={<main>Content</main>}
-/>
+>
+  <main>Content</main>
+</ZestResponsiveLayout>
 ```
 
 ---
@@ -97,10 +98,11 @@ const BasicApp = () => {
   enableBounceAnimation={false} // Clean, instant transitions
   sidePane={{
     visible: true,
-    pane: <nav>Sidebar</nav>
+    content: <nav>Sidebar</nav>
   }}
-  detailPane={<main>Content</main>}
-/>
+>
+  <main>Content</main>
+</ZestResponsiveLayout>
 ```
 
 ---
@@ -116,13 +118,13 @@ const BasicApp = () => {
   closeOnDesktopOverlayClick={false} // User must click the close button
   sidePane={{
     visible: true,
-    pane: <nav>Settings</nav>,
+    content: <nav>Settings</nav>,
     onClose: () => handleClose()
   }}
-  detailPane={<main>Settings Dashboard</main>}
-/>
+>
+  <main>Settings Dashboard</main>
+</ZestResponsiveLayout>
 ```
-*For a full list of interaction props, see the [Configuration Guide](./configuration.md).*
 
 ---
 
@@ -137,13 +139,34 @@ const BasicApp = () => {
     visible: isOpen,
     keepMounted: true, // Content stays in DOM even when hidden
     title: "Edit Profile",
-    pane: <MyComplexForm />, // Form state is preserved
+    content: <MyComplexForm />, // Form state is preserved
     onClose: () => setIsOpen(false)
   }}
-  detailPane={<main>Main Content Area</main>}
-/>
+>
+  <main>Main Content Area</main>
+</ZestResponsiveLayout>
 ```
-*By default, Zest unloads sidebar content to prevent stale state. Use `keepMounted` only when necessary to preserve stateful components.*
+
+---
+
+### Custom Styling Hooks
+**Problem:** I need to integrate Zest into my specific design system with custom classes.
+
+**Solution:** Use the `className` and `style` props on both the root layout and the side pane.
+
+```tsx
+<ZestResponsiveLayout 
+  className="my-app-layout"
+  style={{ background: "#f0f0f0" }}
+  sidePane={{ 
+    visible: true, 
+    content: <Sidebar />, 
+    className: "my-custom-sidebar" 
+  }}
+>
+  <Content />
+</ZestResponsiveLayout>
+```
 
 ---
 
