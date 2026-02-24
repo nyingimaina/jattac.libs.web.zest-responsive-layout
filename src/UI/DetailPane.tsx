@@ -8,6 +8,7 @@ interface DetailPaneProps {
   hydrated: boolean;
   isMobile: boolean;
   isSidePaneVisible: boolean;
+  enableDesktopOverlay: boolean;
 }
 
 export const DetailPane: React.FC<DetailPaneProps> = ({
@@ -17,7 +18,10 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
   hydrated,
   isMobile,
   isSidePaneVisible,
+  enableDesktopOverlay,
 }) => {
+  const isLocked = !isMobile && isSidePaneVisible && enableDesktopOverlay;
+
   return (
     <div
       className={styles.detailPane}
@@ -30,6 +34,7 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
         transition: hydrated
           ? "flex 250ms ease, opacity 250ms ease"
           : undefined,
+        overflow: isLocked ? "hidden" : "auto",
       }}
     >
       {children}

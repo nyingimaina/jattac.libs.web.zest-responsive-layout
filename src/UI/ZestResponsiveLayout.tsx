@@ -113,6 +113,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         sideWidth={sideWidth}
         desktopDetailPaneWidth={desktopDetailPaneWidth}
         hydrated={hydrated}
+        enableDesktopOverlay={enableDesktopOverlay}
       >
         {finalContent}
       </DetailPane>

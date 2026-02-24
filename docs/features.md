@@ -36,6 +36,8 @@ The layout doesn't just hide things; it transforms.
 ### Desktop Overlay System
 Control the focus of your application. The desktop overlay helps users concentrate on the sidebar task while subtly dimming the main content.
 
+*   **Fixed Global Focus:** The overlay now covers the entire browser window and scrollbars, preventing accidental interactions outside the layout.
+*   **Scroll Lockdown:** Automatically prevents background scrolling in the detail pane while the overlay is active, ensuring a consistent user experience.
 *   **Configurable:** Turn it on/off per view.
 *   **Interactive:** Decide if clicking the overlay should dismiss the sidebar.
 
