@@ -43,6 +43,8 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
         style={{
           ...style,
           width: isMobile ? "100%" : sideWidth,
+          marginLeft: !isMobile && !visible ? `calc(-1 * ${sideWidth})` : "0",
+          flexShrink: 0,
         }}
       >
         {(visible || keepMounted) && (
