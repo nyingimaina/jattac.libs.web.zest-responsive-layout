@@ -21,6 +21,7 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
   enableDesktopOverlay,
 }) => {
   const isLocked = !isMobile && isSidePaneVisible && enableDesktopOverlay;
+  const flexBasis = desktopDetailPaneWidth || `calc(100% - (${sideWidth} + 2rem))`;
 
   return (
     <div
@@ -29,6 +30,8 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
         flex:
           !isMobile && isSidePaneVisible && desktopDetailPaneWidth
             ? `0 0 ${desktopDetailPaneWidth}`
+            : !isMobile && isSidePaneVisible
+            ? `0 0 ${flexBasis}`
             : "1 1 100%",
         opacity: hydrated && !isMobile ? 1 : undefined,
         transition: hydrated

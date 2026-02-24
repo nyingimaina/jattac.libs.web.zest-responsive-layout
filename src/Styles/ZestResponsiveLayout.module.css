@@ -54,7 +54,11 @@
 }
 
 .desktopPane {
-  border-left: 1px solid #e0e0e0;
+  border-left: none;
+  margin: 1rem;
+  border-radius: 1.25rem;
+  height: calc(100% - 2rem);
+  align-self: center;
   transition:
     width 250ms ease,
     margin-left 250ms ease,
