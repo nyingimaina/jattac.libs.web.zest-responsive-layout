@@ -47,6 +47,7 @@ Ready to dive deeper? Explore our documentation:
 4.  [Configuration](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/configuration.md) - Deep-dive into customization.
 5.  [Development Guide](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/development.md) - For contributors and advanced users.
 6.  [Breaking Changes (Migration Guide)](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/breaking-changes.md) - Upgrading from v1 to v2.
+7.  **[Bug Fixes](./conductor/fixes.md)** - History of resolved issues.
 
 ---
 
