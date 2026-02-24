@@ -49,6 +49,7 @@
   border-left: 1px solid #e0e0e0;
   transition:
     width 250ms ease,
+    margin-left 250ms ease,
     transform 250ms ease,
     opacity 250ms ease;
 }
