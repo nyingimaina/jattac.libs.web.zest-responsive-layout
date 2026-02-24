@@ -25,7 +25,7 @@ Technical specifications for the `ZestResponsiveLayout` component (v2.0.0).
 | `enableBounceAnimation` | `boolean` | `true` | Enables the "Zesty" bounce effect. |
 | `mobileBreakpointPx` | `number` | `768` | Screen width where layout switches to mobile mode. |
 | `enableDesktopOverlay` | `boolean` | `true` | Show a dimming overlay on desktop when open. |
-| `closeOnDesktopOverlayClick` | `boolean` | `true` | Close the sidebar when clicking the desktop overlay. |
+| `closeOnDesktopOverlayClick` | `boolean` | `false` | Close the sidebar when clicking the desktop overlay. |
 | `detailPane` | `React.ReactNode` | `undefined` | **(Deprecated)** Use `children` instead. |
 | `desktopSidePaneWidth` | `string` | `undefined` | **(Deprecated)** Use `sidePaneWidth` instead. |
 

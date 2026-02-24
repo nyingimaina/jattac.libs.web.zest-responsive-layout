@@ -3,27 +3,22 @@ import styles from "../Styles/ZestResponsiveLayout.module.css";
 
 interface DetailPaneProps {
   children: React.ReactNode;
-  isMobile: boolean;
-  isSidePaneVisible: boolean;
   sideWidth: string;
   desktopDetailPaneWidth?: string;
   hydrated: boolean;
-  enableDesktopOverlay?: boolean;
-  onOverlayClick?: () => void;
+  isMobile: boolean;
+  isSidePaneVisible: boolean;
 }
 
 export const DetailPane: React.FC<DetailPaneProps> = ({
   children,
-  isMobile,
-  isSidePaneVisible,
   sideWidth,
   desktopDetailPaneWidth,
   hydrated,
-  enableDesktopOverlay = true,
-  onOverlayClick,
+  isMobile,
+  isSidePaneVisible,
 }) => {
   const flexBasis = desktopDetailPaneWidth || `calc(100% - ${sideWidth})`;
-  const showOverlay = !isMobile && isSidePaneVisible && enableDesktopOverlay;
 
   return (
     <div
@@ -40,11 +35,6 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
       }}
     >
       {children}
-      <div 
-        className={`${styles.detailOverlay} ${showOverlay ? styles.detailOverlayVisible : ""}`} 
-        onClick={onOverlayClick} 
-        aria-hidden="true"
-      />
     </div>
   );
 };

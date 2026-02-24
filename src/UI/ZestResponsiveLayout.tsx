@@ -63,7 +63,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
   enableBounceAnimation = true,
   mobileBreakpointPx = 768,
   enableDesktopOverlay = true,
-  closeOnDesktopOverlayClick = true,
+  closeOnDesktopOverlayClick = false,
   className,
   style,
 }) => {
@@ -100,6 +100,8 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
     }
   };
 
+  const showOverlay = !isMobile && sidePane.visible && enableDesktopOverlay;
+
   return (
     <div 
       className={`${styles.container} ${className || ""}`} 
@@ -111,11 +113,15 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         sideWidth={sideWidth}
         desktopDetailPaneWidth={desktopDetailPaneWidth}
         hydrated={hydrated}
-        enableDesktopOverlay={enableDesktopOverlay}
-        onOverlayClick={handleOverlayClick}
       >
         {finalContent}
       </DetailPane>
+
+      <div 
+        className={`${styles.detailOverlay} ${showOverlay ? styles.detailOverlayVisible : ""}`} 
+        onClick={handleOverlayClick} 
+        aria-hidden="true"
+      />
 
       <SidePane
         ref={overlayRef}
