@@ -2,6 +2,9 @@
 
 Summary of bug fixes in descending order.
 
+## [2.1.1] - 2026-02-24
+- **Premium Elevation:** Implemented multi-layered soft shadows on the SidePane to create a modern, high-depth "floating" effect over the global overlay.
+
 ## [2.1.0] - 2026-02-24
 - **Global Overlay System:** Refactored the dimming overlay to use `position: fixed`, ensuring it covers the entire window and scrollbars for better focus.
 - **Scroll Lockdown:** Implemented dynamic `overflow: hidden` on the Detail Pane when the overlay is active to prevent scroll-leakage and unintended background interactions.
