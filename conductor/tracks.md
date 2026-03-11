@@ -7,3 +7,9 @@
 | `component-decomposition` | Decompose Layout into Sub-components | `completed` | [Plan](./tracks/component-decomposition/plan.md) |
 | `api-alignment` | Align Props and Types with README | `completed` | [Plan](./tracks/api-alignment/plan.md) |
 | `final-validation` | Final Build and Verification | `completed` | [Plan](./tracks/final-validation/plan.md) |
+
+---
+
+- [ ] **Track: DetailPane Scroll Position Preservation**
+*Link: [./tracks/scroll-fix_20260311/](./tracks/scroll-fix_20260311/)*
+
