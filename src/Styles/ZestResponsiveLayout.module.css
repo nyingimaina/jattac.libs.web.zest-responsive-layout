@@ -66,6 +66,12 @@
     opacity 250ms ease;
 }
 
+.desktopOverlayPane {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
 .mobileOverlay {
   position: fixed;
   top: env(safe-area-inset-top);

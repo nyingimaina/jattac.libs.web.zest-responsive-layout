@@ -28,16 +28,14 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
       className={styles.detailPane}
       style={{
         flex:
-          !isMobile && isSidePaneVisible && desktopDetailPaneWidth
-            ? `0 0 ${desktopDetailPaneWidth}`
-            : !isMobile && isSidePaneVisible
-            ? `0 0 ${flexBasis}`
+          !isMobile && isSidePaneVisible && !enableDesktopOverlay
+            ? (desktopDetailPaneWidth ? `0 0 ${desktopDetailPaneWidth}` : `0 0 ${flexBasis}`)
             : "1 1 100%",
         opacity: hydrated && !isMobile ? 1 : undefined,
         transition: hydrated
           ? "flex 250ms ease, opacity 250ms ease"
           : undefined,
-        overflow: isLocked ? "hidden" : "auto",
+        overflow: "auto", // isLocked ? "hidden" : "auto",
       }}
     >
       {children}

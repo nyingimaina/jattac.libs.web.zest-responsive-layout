@@ -133,6 +133,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         keepMounted={sidePane.keepMounted}
         isMobile={isMobile}
         enableBounceAnimation={enableBounceAnimation}
+        enableDesktopOverlay={enableDesktopOverlay}
         hydrated={hydrated}
         sideWidth={sideWidth}
         className={sidePane.className}

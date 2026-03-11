@@ -9,6 +9,7 @@ interface SidePaneProps {
   keepMounted?: boolean;
   isMobile: boolean;
   enableBounceAnimation: boolean;
+  enableDesktopOverlay: boolean;
   hydrated: boolean;
   sideWidth: string;
   className?: string;
@@ -25,6 +26,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       keepMounted = false,
       isMobile,
       enableBounceAnimation,
+      enableDesktopOverlay,
       hydrated,
       sideWidth,
       className,
@@ -32,18 +34,20 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     },
     ref
   ) => {
+    const isDesktopOverlay = !isMobile && enableDesktopOverlay;
+
     return (
       <div
         ref={ref}
         className={`${styles.sidePane} ${
           isMobile ? styles.mobileOverlay : styles.desktopPane
-        } ${enableBounceAnimation && hydrated && visible ? styles.bounce : ""} ${
-          !visible ? styles.sidePaneHidden : ""
-        } ${className || ""}`}
+        } ${isDesktopOverlay ? styles.desktopOverlayPane : ""} ${
+          enableBounceAnimation && hydrated && visible ? styles.bounce : ""
+        } ${!visible ? styles.sidePaneHidden : ""} ${className || ""}`}
         style={{
           ...style,
           width: isMobile ? "100%" : sideWidth,
-          marginLeft: !isMobile && !visible ? `calc(-1 * (${sideWidth} + 2rem))` : "0",
+          marginLeft: !isMobile && !visible && !enableDesktopOverlay ? `calc(-1 * (${sideWidth} + 2rem))` : "0",
           flexShrink: 0,
         }}
       >
