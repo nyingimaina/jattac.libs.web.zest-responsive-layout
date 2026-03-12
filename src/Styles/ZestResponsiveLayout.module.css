@@ -52,6 +52,13 @@
   z-index: 9999;
 }
 
+.isDragging {
+  box-shadow: 
+    0 25px 50px -12px rgba(15, 23, 42, 0.25),
+    0 15px 20px -5px rgba(15, 23, 42, 0.1); /* Floating 'lifted' effect */
+  z-index: 10000;
+}
+
 .sidePaneHidden {
   transform: translateX(110%);
   opacity: 0;
