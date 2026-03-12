@@ -20,12 +20,14 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(15, 23, 42, 0.4); /* Corporate Slate-Navy Overlay */
+  background-color: rgba(15, 23, 42, 0.2); /* Lighter Slate-Navy for glass effect */
+  backdrop-filter: blur(12px); /* Premium Glassmorphism */
+  -webkit-backdrop-filter: blur(12px);
   z-index: 9998;
   cursor: pointer;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 250ms ease;
+  transition: opacity 400ms ease;
 }
 
 .detailOverlayVisible {
@@ -34,47 +36,51 @@
 }
 
 .sidePane {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: 
-    -4px 0 12px -5px rgba(0, 0, 0, 0.1), 
-    -10px 0 25px -10px rgba(15, 23, 42, 0.15); /* Multi-layered soft elevation */
+    0 10px 15px -3px rgba(15, 23, 42, 0.08),
+    0 4px 6px -2px rgba(15, 23, 42, 0.04),
+    -10px 0 50px -15px rgba(15, 23, 42, 0.2); /* Deep multi-layered shadow */
   transition:
-    transform 250ms ease,
-    opacity 250ms ease,
-    right 250ms ease; /* Transition 'right' instead of margin-left */
+    transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 400ms ease,
+    right 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
   position: absolute;
   z-index: 9999;
 }
 
 .sidePaneHidden {
-  transform: translateX(100%);
+  transform: translateX(110%);
   opacity: 0;
   pointer-events: none;
 }
 
 .desktopPane {
   border-left: none;
-  margin: 1rem;
-  border-radius: 1.25rem;
-  height: calc(100% - 2rem);
-  right: 0; /* Default position */
+  margin: 1.5rem;
+  border-radius: 1.5rem;
+  height: calc(100% - 3rem);
+  right: 0;
   top: 0;
 }
 
 .mobileOverlay {
-  position: fixed; /* Keep fixed for mobile full-screen */
+  position: fixed;
   top: env(safe-area-inset-top);
   bottom: env(safe-area-inset-bottom);
   left: env(safe-area-inset-left);
   right: env(safe-area-inset-right);
   z-index: 1000;
+  border-radius: 0; /* Full screen on mobile */
+  margin: 0;
+  height: 100%;
 }
 
 .bounce {
-  animation: bounceIn 300ms ease forwards;
+  /* We use the cubic-bezier on the main transition for the spring effect now */
 }
 
 @keyframes bounceIn {
