@@ -10,6 +10,6 @@
 
 ---
 
-- [ ] **Track: DetailPane Scroll Position Preservation**
+- [x] **Track: DetailPane Scroll Position Preservation**
 *Link: [./tracks/scroll-fix_20260311/](./tracks/scroll-fix_20260311/)*
 

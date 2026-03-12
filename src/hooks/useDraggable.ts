@@ -10,49 +10,42 @@ export const useDraggable = (active: boolean = true) => {
   const [isDragging, setIsDragging] = useState(false);
   const startPos = useRef<Position>({ x: 0, y: 0 });
   const currentPos = useRef<Position>({ x: 0, y: 0 });
+  const latestPos = useRef<Position>({ x: 0, y: 0 });
+
+  // Update latestPos ref whenever position state changes
+  useEffect(() => {
+    latestPos.current = position;
+  }, [position]);
 
   const onMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-
+    // Note: We don't check isDragging here because the listener is only attached while dragging
     const dx = e.clientX - startPos.current.x;
     const dy = e.clientY - startPos.current.y;
 
     let newX = currentPos.current.x + dx;
     let newY = currentPos.current.y + dy;
 
-    // --- Boundary Logic ---
-    // We prevent it from going too far left (off-screen) or too far right
-    // Simple constraint: keep it within a reasonable range of its origin
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Limit horizontal: Can't drag more than 90% of screen width to the left
     newX = Math.max(newX, -viewportWidth * 0.9);
-    newX = Math.min(newX, 100); // Small buffer to the right
+    newX = Math.min(newX, 100);
     
-    // Limit vertical: Keep it within the screen
     newY = Math.max(newY, -viewportHeight * 0.5);
     newY = Math.min(newY, viewportHeight * 0.5);
 
     setPosition({ x: newX, y: newY });
-  }, [isDragging]);
+  }, []);
 
   const onMouseUp = useCallback(() => {
-    if (!isDragging) return;
-    
     setIsDragging(false);
 
-    // --- Magnetic Snapping ---
-    // If we are close to the original right edge, snap back to 0
-    let finalX = position.x;
-    let finalY = position.y;
+    // Use the latest position from the ref to avoid stale closure
+    let finalX = latestPos.current.x;
+    let finalY = latestPos.current.y;
 
-    if (Math.abs(position.x) < 60) {
-      finalX = 0;
-    }
-    if (Math.abs(position.y) < 60) {
-      finalY = 0;
-    }
+    if (Math.abs(finalX) < 60) finalX = 0;
+    if (Math.abs(finalY) < 60) finalY = 0;
 
     const snappedPos = { x: finalX, y: finalY };
     setPosition(snappedPos);
@@ -60,7 +53,7 @@ export const useDraggable = (active: boolean = true) => {
     
     document.removeEventListener("mousemove", onMouseMove);
     document.removeEventListener("mouseup", onMouseUp);
-  }, [isDragging, position, onMouseMove]);
+  }, [onMouseMove]); // Removed isDragging and position dependencies
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (!active) return;
