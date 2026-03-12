@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect } from "react";
+import React, { forwardRef, useEffect, useCallback } from "react";
 import styles from "../Styles/ZestResponsiveLayout.module.css";
 import { useDraggable } from "../hooks/useDraggable";
 
@@ -36,7 +36,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     ref
   ) => {
     const isDesktop = !isMobile;
-    const { position, isDragging, dragHandleProps, resetPosition } = useDraggable(isDesktop);
+    const { position, isDragging, dragHandleProps, resetPosition, elementRef } = useDraggable(isDesktop);
 
     // Reset position when it closes to avoid opening in a weird place
     useEffect(() => {
@@ -45,9 +45,24 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       }
     }, [visible, resetPosition]);
 
+    // Handle multiple refs (the forwarded ref and the internal draggable ref)
+    const setRefs = useCallback(
+      (node: HTMLDivElement) => {
+        // Forwarded ref
+        if (typeof ref === "function") {
+          ref(node);
+        } else if (ref && typeof ref === "object") {
+          (ref as any).current = node;
+        }
+        // Draggable ref
+        elementRef.current = node;
+      },
+      [ref, elementRef]
+    );
+
     return (
       <div
-        ref={ref}
+        ref={setRefs}
         className={`${styles.sidePane} ${
           isMobile ? styles.mobileOverlay : styles.desktopPane
         } ${enableBounceAnimation && hydrated && visible && !isDragging ? styles.bounce : ""} ${
@@ -57,8 +72,6 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
           ...style,
           width: isMobile ? "100%" : sideWidth,
           flexShrink: 0,
-          // Only apply transform inline if we are desktop AND visible
-          // This allows the sidePaneHidden class (translateX 110%) to work when closed
           transform: isDesktop && visible ? `translate(${position.x}px, ${position.y}px)` : undefined,
           transition: isDragging ? "none" : undefined,
         }}
@@ -69,12 +82,12 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
               className={styles.sidePaneHeader}
               {...dragHandleProps}
             >
-              {title || <div />} {/* Ensure handle exists even without title */}
+              {title || <div />}
               {onClose && (
                 <button 
                   className={styles.closeButton} 
                   onClick={onClose}
-                  onMouseDown={(e) => e.stopPropagation()} // Prevent drag start when clicking close
+                  onMouseDown={(e) => e.stopPropagation()}
                 >
                   ×
                 </button>

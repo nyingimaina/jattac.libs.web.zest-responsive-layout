@@ -8,6 +8,7 @@ interface Position {
 export const useDraggable = (active: boolean = true) => {
   const [position, setPosition] = useState<Position>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const elementRef = useRef<HTMLElement | null>(null);
   const startPos = useRef<Position>({ x: 0, y: 0 });
   const currentPos = useRef<Position>({ x: 0, y: 0 });
   const latestPos = useRef<Position>({ x: 0, y: 0 });
@@ -27,13 +28,11 @@ export const useDraggable = (active: boolean = true) => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    // Constraint to viewport (arbitrary but safe)
-    // Allow dragging most of the pane across the screen
     newX = Math.max(newX, -viewportWidth + 100); 
     newX = Math.min(newX, 100); 
     
-    newY = Math.max(newY, -viewportHeight * 0.1); // Don't go above screen
-    newY = Math.min(newY, viewportHeight * 0.8); // Don't go off bottom
+    newY = Math.max(newY, -viewportHeight * 0.1);
+    newY = Math.min(newY, viewportHeight * 0.8);
 
     setPosition({ x: newX, y: newY });
   }, []);
@@ -41,12 +40,24 @@ export const useDraggable = (active: boolean = true) => {
   const onMouseUp = useCallback(() => {
     setIsDragging(false);
 
-    // Use the latest position from the ref to avoid stale closure
     let finalX = latestPos.current.x;
     let finalY = latestPos.current.y;
 
-    if (Math.abs(finalX) < 60) finalX = 0;
-    if (Math.abs(finalY) < 60) finalY = 0;
+    const SNAP_THRESHOLD = 60;
+
+    if (Math.abs(finalX) < SNAP_THRESHOLD) {
+      finalX = 0;
+    } 
+    else if (elementRef.current) {
+      const rect = elementRef.current.getBoundingClientRect();
+      if (rect.left < SNAP_THRESHOLD) {
+        finalX = finalX - rect.left;
+      }
+    }
+
+    if (Math.abs(finalY) < SNAP_THRESHOLD) {
+      finalY = 0;
+    }
 
     const snappedPos = { x: finalX, y: finalY };
     setPosition(snappedPos);
@@ -54,7 +65,7 @@ export const useDraggable = (active: boolean = true) => {
     
     document.removeEventListener("mousemove", onMouseMove);
     document.removeEventListener("mouseup", onMouseUp);
-  }, [onMouseMove]); // Removed isDragging and position dependencies
+  }, [onMouseMove]);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     if (!active) return;
@@ -66,7 +77,6 @@ export const useDraggable = (active: boolean = true) => {
     document.addEventListener("mouseup", onMouseUp);
   }, [active, onMouseMove, onMouseUp]);
 
-  // Clean up on unmount
   useEffect(() => {
     return () => {
       document.removeEventListener("mousemove", onMouseMove);
@@ -86,6 +96,7 @@ export const useDraggable = (active: boolean = true) => {
       onMouseDown,
       style: { cursor: active ? (isDragging ? "grabbing" : "grab") : "default" }
     },
-    resetPosition
+    resetPosition,
+    elementRef
   };
 };

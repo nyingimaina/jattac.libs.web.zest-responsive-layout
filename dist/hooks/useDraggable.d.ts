@@ -12,5 +12,6 @@ export declare const useDraggable: (active?: boolean) => {
         };
     };
     resetPosition: () => void;
+    elementRef: import("react").MutableRefObject<HTMLElement | null>;
 };
 export {};
