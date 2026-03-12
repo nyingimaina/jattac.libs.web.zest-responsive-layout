@@ -34,20 +34,19 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     },
     ref
   ) => {
-    const isDesktopOverlay = !isMobile && enableDesktopOverlay;
+    const isDesktop = !isMobile;
 
     return (
       <div
         ref={ref}
         className={`${styles.sidePane} ${
           isMobile ? styles.mobileOverlay : styles.desktopPane
-        } ${isDesktopOverlay ? styles.desktopOverlayPane : ""} ${
-          enableBounceAnimation && hydrated && visible ? styles.bounce : ""
-        } ${!visible ? styles.sidePaneHidden : ""} ${className || ""}`}
+        } ${enableBounceAnimation && hydrated && visible ? styles.bounce : ""} ${
+          !visible ? styles.sidePaneHidden : ""
+        } ${className || ""}`}
         style={{
           ...style,
           width: isMobile ? "100%" : sideWidth,
-          marginLeft: !isMobile && !visible && !enableDesktopOverlay ? `calc(-1 * (${sideWidth} + 2rem))` : "0",
           flexShrink: 0,
         }}
       >

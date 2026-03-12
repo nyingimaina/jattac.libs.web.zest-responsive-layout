@@ -1,5 +1,5 @@
 .container {
-  display: flex;
+  display: block; /* No longer flex-based for the main layout */
   width: 100%;
   height: 100%;
   position: relative;
@@ -7,17 +7,19 @@
 }
 
 .detailPane {
+  width: 100%;
+  height: 100%;
   overflow: auto;
   position: relative;
   z-index: 1;
 }
 
 .detailOverlay {
-  position: fixed;
+  position: absolute; /* Relative to container */
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   background-color: rgba(15, 23, 42, 0.4); /* Corporate Slate-Navy Overlay */
   z-index: 9998;
   cursor: pointer;
@@ -42,8 +44,8 @@
   transition:
     transform 250ms ease,
     opacity 250ms ease,
-    margin-left 250ms ease;
-  position: relative;
+    right 250ms ease; /* Transition 'right' instead of margin-left */
+  position: absolute;
   z-index: 9999;
 }
 
@@ -58,22 +60,12 @@
   margin: 1rem;
   border-radius: 1.25rem;
   height: calc(100% - 2rem);
-  align-self: center;
-  transition:
-    width 250ms ease,
-    margin-left 250ms ease,
-    transform 250ms ease,
-    opacity 250ms ease;
-}
-
-.desktopOverlayPane {
-  position: absolute;
-  right: 0;
+  right: 0; /* Default position */
   top: 0;
 }
 
 .mobileOverlay {
-  position: fixed;
+  position: fixed; /* Keep fixed for mobile full-screen */
   top: env(safe-area-inset-top);
   bottom: env(safe-area-inset-bottom);
   left: env(safe-area-inset-left);

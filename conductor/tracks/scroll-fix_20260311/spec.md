@@ -1,21 +1,25 @@
-# Track: DetailPane Scroll Position Preservation
+# Track: Floating Zest Architecture (Scroll Fix Pivot)
 
 ## Overview
-Address a UX "jank" bug where triggering the SidePane on Desktop view causes the DetailPane's vertical scroll position to shift unexpectedly. This is particularly noticeable when the DetailPane contains a large, horizontally-scrollable table, leading to a loss of visual context when the SidePane is toggled.
+Refactor the `ZestResponsiveLayout` from a "Flex-Push" model to a "Floating-Layer" model. This architectural shift ensures the `DetailPane` always maintains 100% width, eliminating layout reflows and "scroll whiplash" when the `SidePane` is toggled. It also introduces a "Quiet Luxury" aesthetic with draggable components and premium animations.
 
 ## Functional Requirements
-- **Scroll State Preservation:** The `ZestResponsiveLayout` must ensure the `DetailPane`'s vertical and horizontal scroll positions are locked and preserved when the `SidePane` state changes.
-- **SidePane Toggle Integrity:** Opening or closing the `SidePane` must not trigger any layout shifts that inadvertently scroll the `DetailPane` container.
+- **Layered Layout:** The `DetailPane` remains at 100% width/height. The `SidePane` floats on top as an absolute-positioned layer.
+- **Draggable SidePane:** On Desktop, users can drag the `SidePane` to reposition it.
+- **Magnetic Snapping:** The `SidePane` snaps to edges (top/bottom/right) when dragged close.
+- **Scroll Preservation:** Opening/Closing the sidebar must have zero impact on the `DetailPane`'s scroll coordinates.
 
-## Non-Functional Requirements
-- **Visual Stability:** The transition must be seamless, without visual "whiplash" or de-contextification.
-- **Performance:** Scroll locking logic must not introduce noticeable lag during SidePane animations.
+## Visual & Animation Requirements ("Quiet Luxury")
+- **Spring Animations:** Use physics-based springs for opening/closing transitions.
+- **Glassmorphism:** The desktop overlay uses `backdrop-filter: blur()` for a premium feel.
+- **Micro-interactions:** Elevation changes (shadows) and subtle scaling during drag operations.
 
 ## Acceptance Criteria
-- [ ] **Reproduction:** Demonstrate the bug by placing a large, horizontally-scrollable table in the `DetailPane` and toggling the `SidePane` on Desktop.
-- [ ] **Verification:** After the fix, toggling the `SidePane` while the `DetailPane` is scrolled (vertically or horizontally) does not alter its scroll coordinates.
-- [ ] **Desktop Compatibility:** The fix is verified to work specifically for the Desktop view where the `SidePane` is triggered.
+- [ ] **No Reflow:** Toggling the SidePane causes zero width change to the `DetailPane`.
+- [ ] **Absolute Positioning:** SidePane overlays content on Desktop instead of pushing it.
+- [ ] **Draggability:** Users can move the SidePane on Desktop via a handle or header.
+- [ ] **Mobile Stability:** Mobile behavior remains a full-screen or standard overlay (as currently implemented).
 
 ## Out of Scope
-- Responsive layout changes specifically for Mobile/Tablet viewports (unless they share the underlying cause).
-- General styling of the `SidePane` or `DetailPane` content.
+- Full-screen "Push" mode (deprecated in favor of Floating mode).
+- Resizing the SidePane (only dragging is required for now).
