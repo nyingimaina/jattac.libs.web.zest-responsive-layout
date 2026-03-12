@@ -7,6 +7,7 @@ interface SidePaneProps {
     keepMounted?: boolean;
     isMobile: boolean;
     enableBounceAnimation: boolean;
+    enableDesktopOverlay: boolean;
     hydrated: boolean;
     sideWidth: string;
     className?: string;
