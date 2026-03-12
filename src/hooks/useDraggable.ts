@@ -18,7 +18,6 @@ export const useDraggable = (active: boolean = true) => {
   }, [position]);
 
   const onMouseMove = useCallback((e: MouseEvent) => {
-    // Note: We don't check isDragging here because the listener is only attached while dragging
     const dx = e.clientX - startPos.current.x;
     const dy = e.clientY - startPos.current.y;
 
@@ -28,11 +27,13 @@ export const useDraggable = (active: boolean = true) => {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     
-    newX = Math.max(newX, -viewportWidth * 0.9);
-    newX = Math.min(newX, 100);
+    // Constraint to viewport (arbitrary but safe)
+    // Allow dragging most of the pane across the screen
+    newX = Math.max(newX, -viewportWidth + 100); 
+    newX = Math.min(newX, 100); 
     
-    newY = Math.max(newY, -viewportHeight * 0.5);
-    newY = Math.min(newY, viewportHeight * 0.5);
+    newY = Math.max(newY, -viewportHeight * 0.1); // Don't go above screen
+    newY = Math.min(newY, viewportHeight * 0.8); // Don't go off bottom
 
     setPosition({ x: newX, y: newY });
   }, []);

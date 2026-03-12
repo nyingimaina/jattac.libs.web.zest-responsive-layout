@@ -45,10 +45,6 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       }
     }, [visible, resetPosition]);
 
-    const transform = isDragging 
-      ? `translate(${position.x}px, ${position.y}px)` 
-      : visible ? "translateX(0)" : "translateX(110%)";
-
     return (
       <div
         ref={ref}
@@ -61,8 +57,10 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
           ...style,
           width: isMobile ? "100%" : sideWidth,
           flexShrink: 0,
-          transform: isDesktop ? `translate(${position.x}px, ${position.y}px)` : undefined,
-          transition: isDragging ? "none" : undefined, // Disable transition while dragging
+          // Only apply transform inline if we are desktop AND visible
+          // This allows the sidePaneHidden class (translateX 110%) to work when closed
+          transform: isDesktop && visible ? `translate(${position.x}px, ${position.y}px)` : undefined,
+          transition: isDragging ? "none" : undefined,
         }}
       >
         {(visible || keepMounted) && (
