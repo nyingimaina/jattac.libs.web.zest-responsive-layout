@@ -72,7 +72,10 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
           ...style,
           width: isMobile ? "100%" : sideWidth,
           flexShrink: 0,
-          transform: isDesktop && visible ? `translate(${position.x}px, ${position.y}px)` : undefined,
+          transform:
+            !visible && isMobile ? 'translateX(100%)'
+            : isDesktop && visible ? `translate(${position.x}px, ${position.y}px)`
+            : undefined,
           transition: isDragging ? "none" : undefined,
         }}
       >

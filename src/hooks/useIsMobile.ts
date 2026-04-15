@@ -7,7 +7,11 @@ import { useState, useEffect, useCallback } from "react";
  * @param breakpointPx The pixel width at which to switch to mobile view.
  */
 export const useIsMobile = (breakpointPx: number = 768): boolean => {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    return window.innerWidth / rem <= breakpointPx / rem;
+  });
 
   const handleResize = useCallback(() => {
     // We use getComputedStyle to handle cases where the base font-size isn't 16px
