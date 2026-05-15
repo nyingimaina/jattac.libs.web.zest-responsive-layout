@@ -102,6 +102,15 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
 
   const showOverlay = !isMobile && sidePane.visible && enableDesktopOverlay;
 
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" && sidePane.visible && !isMobile && !enableDesktopOverlay) {
+      console.warn(
+        "[Zest] SidePane is visible on desktop but `enableDesktopOverlay` is false. " +
+        "The main pane overlay will not render. Pass `enableDesktopOverlay={true}` (the default) to restore it."
+      );
+    }
+  }, [sidePane.visible, isMobile, enableDesktopOverlay]);
+
   return (
     <div 
       className={`${styles.container} ${className || ""}`} 

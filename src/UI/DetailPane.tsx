@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import styles from "../Styles/ZestResponsiveLayout.module.css";
 
 interface DetailPaneProps {
@@ -20,8 +20,23 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
   isSidePaneVisible,
   enableDesktopOverlay,
 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (isSidePaneVisible) {
+      el.setAttribute("inert", "");
+      el.setAttribute("aria-hidden", "true");
+    } else {
+      el.removeAttribute("inert");
+      el.removeAttribute("aria-hidden");
+    }
+  }, [isSidePaneVisible]);
+
   return (
     <div
+      ref={ref}
       className={styles.detailPane}
       style={{
         flex: "1 1 100%",
