@@ -40,7 +40,7 @@ export default [
   },
   {
     // For type declarations
-    input: './dist/ZestResponsiveLayout.d.ts', // Corrected path
+    input: './dist/UI/ZestResponsiveLayout.d.ts',
     output: [{ file: 'dist/ZestResponsiveLayout.d.ts', format: 'esm' }],
     plugins: [dts()],
   },
