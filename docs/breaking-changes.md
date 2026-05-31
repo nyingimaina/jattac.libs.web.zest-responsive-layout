@@ -1,26 +1,92 @@
-# Breaking Changes ⚠️
+# Breaking Changes
 
-A history of changes that may require manual intervention when upgrading.
-
-### Table of Contents
-*   [Version 2.0.0 (The Gold Standard)](#version-200-the-gold-standard)
-*   [Version 1.1.0](#version-110)
+A record of changes across major versions that may require manual intervention when upgrading.
 
 ---
 
-[← Previous: Development](./development.md) | [Next: README →](../README.md)
+## Table of Contents
+
+- [Version 2.3.1 (Mobile Outside Click Fix)](#version-231-mobile-outside-click-fix)
+- [Version 2.3.0 (Side Pane Stack API)](#version-230-side-pane-stack-api)
+- [Version 2.1.0 (Side Pane Stack API)](#version-210-side-pane-stack-api)
+- [Version 2.0.0 (The Gold Standard)](#version-200-the-gold-standard)
+- [Version 1.1.0](#version-110)
 
 ---
 
-### Version 2.0.0 (The Gold Standard)
+## Version 2.3.1 (Mobile Outside Click Fix)
 
-Version 2.0 introduces a more idiomatic React API, better styling hooks, and consolidated width logic.
+Version 2.3.1 removes the mobile outside click detection that caused the side pane to close unexpectedly when users interacted with portaled UI elements (dropdown menus, datepickers, tooltips) rendered inside the side pane.
 
-#### 🛠 Migration Guide (Compat Mode)
-We have included a **Compatibility Layer** in v2.0.0. Your existing v1 code will continue to work, but you will see deprecation warnings in your console during development.
+### Removed: Mobile Outside Click
 
-#### 1. Main Content: `detailPane` ⮕ `children`
-Instead of passing content via a prop, use standard React children.
+The `useOutsideClick` hook on mobile has been removed because the mobile side pane fills the entire viewport, leaving no area to click "outside" of. When active, this handler would fire incorrectly on portaled elements that render outside the side pane's DOM hierarchy (e.g., MUI Select dropdowns, Ant Design DatePicker overlays, React-Select menus), causing the side pane to close without warning.
+
+**Affected consumers:** None. This removal restores correct behavior for any application using portaled overlay components inside the side pane on mobile.
+
+---
+
+## Version 2.3.0 (Side Pane Stack API)
+
+Version 2.1.0 introduces the side pane stack context API and makes the `sidePane` prop optional.
+
+### sidePane Prop Is Now Optional
+
+**Before (v2.0.0):**
+```tsx
+<IProps> {
+  sidePane: { /* required */ }
+}
+```
+
+**After (v2.1.0):**
+```tsx
+<IProps> {
+  sidePane?: { /* optional */ }
+}
+```
+
+If your application always passes a `sidePane` object, no migration is needed. The change only affects consumers who previously passed an empty stub to satisfy the type checker.
+
+### New Side Pane Stack API
+
+A context-driven stacking mechanism has been added to replace nested side pane usage. Full documentation is available in the [Examples](docs/examples.md#side-pane-stacking-nested-views) and [API Reference](docs/api.md#side-pane-stack-context-api).
+
+**Before (anti-pattern):**
+```tsx
+// Nesting side panes results in cramped, unusable UI.
+// Do not do this.
+<div style={{ position: 'fixed', right: 0 }}>
+  <ZestResponsiveLayout sidePane={{ visible: true, ... }}>
+    ...
+  </ZestResponsiveLayout>
+</div>
+```
+
+**After (recommended):**
+```tsx
+import { useSidePane } from 'jattac.libs.web.zest-responsive-layout';
+
+// Inside a child component:
+const { openSidePane } = useSidePane();
+
+openSidePane({
+  title: "Detail View",
+  content: <DetailContent />
+});
+```
+
+No manual provider wrapping is required. The `SidePaneProvider` is automatically included inside every `ZestResponsiveLayout` instance.
+
+---
+
+## Version 2.0.0 (The Gold Standard)
+
+Version 2.0.0 introduced a more idiomatic React API, improved styling hooks, and consolidated width logic.
+
+A compatibility layer ensures that v1 code continues to function, with deprecation warnings printed to the console during development.
+
+### Migration: detailPane to children
 
 **Before (v1):**
 ```tsx
@@ -34,21 +100,19 @@ Instead of passing content via a prop, use standard React children.
 </ZestResponsiveLayout>
 ```
 
-#### 2. Side Content: `sidePane.pane` ⮕ `sidePane.content`
-Renamed for clarity and consistency.
+### Migration: sidePane.pane to sidePane.content
 
 **Before (v1):**
 ```tsx
-<ZestResponsiveLayout sidePane={{ pane: <Sidebar />, ... }} ... />
+<ZestResponsiveLayout sidePane={{ pane: <Sidebar /> }} ... />
 ```
 
 **After (v2):**
 ```tsx
-<ZestResponsiveLayout sidePane={{ content: <Sidebar />, ... }} ... />
+<ZestResponsiveLayout sidePane={{ content: <Sidebar /> }} ... />
 ```
 
-#### 3. Width Logic: `desktopSidePaneWidth` ⮕ `sidePaneWidth`
-Consolidated into a single, clearer control.
+### Migration: desktopSidePaneWidth to sidePaneWidth
 
 **Before (v1):**
 ```tsx
@@ -60,15 +124,16 @@ Consolidated into a single, clearer control.
 <ZestResponsiveLayout sidePaneWidth="300px" ... />
 ```
 
-#### 4. Styling Hooks
-You can now pass `className` and `style` directly to the component and the side pane.
+### New Styling Hooks
+
+Custom `className` and `style` props can now be applied to both the root layout and the side pane element.
 
 ```tsx
-<ZestResponsiveLayout 
-  className="my-layout" 
-  sidePane={{ 
-    content: <Sidebar />, 
-    className: "my-sidebar" 
+<ZestResponsiveLayout
+  className="my-layout"
+  sidePane={{
+    content: <Sidebar />,
+    className: "my-sidebar"
   }}
 >
   <Content />
@@ -77,14 +142,17 @@ You can now pass `className` and `style` directly to the component and the side 
 
 ---
 
-### Version 1.1.0
+## Version 1.1.0
 
-#### Introduction of Desktop Overlay
-In version 1.1.0, we introduced a default desktop overlay to improve focus when the side pane is open.
+### Desktop Overlay Introduction
 
-**How to revert to old behavior:**
-Set `enableDesktopOverlay={false}` and `closeOnDesktopOverlayClick={false}`.
+Version 1.1.0 introduced a default desktop overlay to focus user attention when the side pane is open.
 
----
-
-[← Previous: Development](./development.md) | [Next: README →](../README.md)
+**To restore the previous behavior:**
+```tsx
+<ZestResponsiveLayout
+  enableDesktopOverlay={false}
+  closeOnDesktopOverlayClick={false}
+  ...
+/>
+```

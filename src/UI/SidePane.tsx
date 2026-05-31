@@ -13,6 +13,7 @@ interface SidePaneProps {
   enableDesktopOverlay: boolean;
   hydrated: boolean;
   sideWidth: string;
+  preservePositionOnHide?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -30,6 +31,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       enableDesktopOverlay,
       hydrated,
       sideWidth,
+      preservePositionOnHide = false,
       className,
       style,
     },
@@ -39,11 +41,12 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     const { position, isDragging, dragHandleProps, resetPosition, elementRef } = useDraggable(isDesktop);
 
     // Reset position when it closes to avoid opening in a weird place
+    // preservePositionOnHide avoids this for stacked sidepanes
     useEffect(() => {
-      if (!visible) {
+      if (!visible && !preservePositionOnHide) {
         resetPosition();
       }
-    }, [visible, resetPosition]);
+    }, [visible, resetPosition, preservePositionOnHide]);
 
     // Handle multiple refs (the forwarded ref and the internal draggable ref)
     const setRefs = useCallback(

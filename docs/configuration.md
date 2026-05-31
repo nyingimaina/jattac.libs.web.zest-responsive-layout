@@ -1,64 +1,110 @@
-# Configuration Guide ⚙️
+# Configuration Guide
 
-Learn how to fine-tune Zest to match your application's design system.
-
-### Table of Contents
-*   [Layout Proportions](#layout-proportions)
-*   [Responsive Breakpoints](#responsive-breakpoints)
-*   [Interaction Behavior](#interaction-behavior)
+Fine-tuning the `ZestResponsiveLayout` component for application-specific requirements.
 
 ---
 
-[← Previous: API Reference](./api.md) | [Next: Development →](./development.md)
+## Table of Contents
+
+- [Layout Proportions](#layout-proportions)
+- [Responsive Breakpoints](#responsive-breakpoints)
+- [Interaction Behavior](#interaction-behavior)
+- [Side Pane Stack Configuration](#side-pane-stack-configuration)
 
 ---
 
-### Layout Proportions
-Zest uses Flexbox under the hood. You can control exactly how much space each pane takes on desktop using CSS units.
+## Layout Proportions
+
+The side pane width on desktop is controlled via the `sidePaneWidth` prop. The main content area automatically occupies the remaining horizontal space.
 
 ```tsx
 <ZestResponsiveLayout
-  desktopSidePaneWidth="400px"
-  desktopDetailPaneWidth="calc(100% - 400px)"
-  // ...
-/>
+  sidePaneWidth="400px"
+  sidePane={{ visible: true, content: <Sidebar /> }}
+>
+  <Content />
+</ZestResponsiveLayout>
 ```
 
-**Precedence:**
-1. If `sidePane.widthRems` is provided, it calculates `rem` units (legacy).
-2. Otherwise, it uses `desktopSidePaneWidth` (default `25%`).
-3. The Detail Pane automatically occupies the remaining space unless `desktopDetailPaneWidth` is explicitly set.
+**Prop Precedence:**
+
+1. `sidePane.widthRems` (deprecated) — calculates `rem` units from a numeric value; overrides other width props.
+2. `sidePaneWidth` (preferred) — accepts any valid CSS length (`"300px"`, `"30%"`, `"20vw"`).
+3. `desktopSidePaneWidth` (deprecated) — fallback if `sidePaneWidth` is not set.
+4. Default value of `"25%"` is used when none of the above are specified.
 
 ---
 
-### Responsive Breakpoints
-The `mobileBreakpointPx` prop determines when the UI switches from "Side-by-Side" to "Overlay Modal".
+## Responsive Breakpoints
 
-*   **Default:** `768` (Standard Tablets).
-*   **For Enterprise Apps:** Consider `1024` to ensure complex sidebars don't feel cramped on small laptops.
+The `mobileBreakpointPx` prop determines the viewport width at which the layout transitions from desktop mode to mobile mode.
 
----
+- **Default:** `768` pixels, matching standard tablet widths.
+- **Enterprise Applications:** Consider `1024` pixels to prevent complex side panes from appearing cramped on smaller laptop screens.
 
-### Interaction Behavior
-You can customize how users interact with the layout through several boolean flags:
-
-*   **`enableDesktopOverlay`**: Controls the visual dimming. Use `false` if the user needs to reference information in the main pane while using the sidebar.
-*   **`closeOnDesktopOverlayClick`**: Set to `false` for "Drawer-style" sidebars where accidental clicks shouldn't close the pane.
-*   **`enableBounceAnimation`**: Set to `false` for high-density, serious enterprise applications where utility is prioritized over "delight".
-
-#### Advanced State Management: `sidePane.keepMounted`
-By default, Zest is designed to be **stateless and clean**. When `sidePane.visible` is `false`, the children of the sidebar are completely unmounted from the DOM. This ensures that:
-1.  **No Stale Data:** Re-opening the sidebar always shows the latest state.
-2.  **Performance:** Background processes (like timers or data polling) in hidden components are stopped.
-
-**When to use `keepMounted: true`:**
-*   **Forms:** If a user is filling out a multi-step form and closes the sidebar to check something in the main pane, you want their input to be there when they return.
-*   **Heavy Components:** If your sidebar contains a component that is expensive to initialize (like a 3D model or a large data grid), keeping it mounted avoids the "loading" flicker on re-open.
-
-**When to avoid it:**
-*   **Simple Navigations:** For basic menus or lists, unloading ensures a fresh UI every time.
-*   **Resource Heavy Pages:** If you have many sidebars with heavy content, keeping them all mounted can lead to high memory usage.
+```tsx
+<ZestResponsiveLayout
+  mobileBreakpointPx={1024}
+  sidePane={{ visible: true, content: <Sidebar /> }}
+>
+  <Content />
+</ZestResponsiveLayout>
+```
 
 ---
 
-[← Previous: API Reference](./api.md) | [Next: Development →](./development.md)
+## Interaction Behavior
+
+Several boolean props control how users interact with the layout:
+
+### enableDesktopOverlay
+
+Controls whether a dimming overlay is rendered over the main content area when the side pane is open on desktop.
+
+- Default: `true`
+- Set to `false` when users need to reference main content while interacting with the side pane.
+
+### closeOnDesktopOverlayClick
+
+Controls whether clicking the dimming overlay dismisses the side pane.
+
+- Default: `false`
+- Set to `true` for drawer-style side panes where a click outside should close the pane.
+
+### enableBounceAnimation
+
+Controls the opening bounce animation of the side pane.
+
+- Default: `true`
+- Set to `false` for applications that require a restrained aesthetic or must respect `prefers-reduced-motion` user preferences.
+
+---
+
+## Side Pane Stack Configuration
+
+The side pane stack API does not require configuration props on the layout component itself. The `SidePaneProvider` is automatically wrapped around every `ZestResponsiveLayout` instance.
+
+### Usage
+
+```tsx
+const MyComponent = () => {
+  const { openSidePane, closeSidePane, stackLength } = useSidePane();
+
+  const handleDrillIn = () => {
+    openSidePane({
+      title: "Detail View",
+      content: <DetailView />,
+      onClose: () => console.log("Detail view closed")
+    });
+  };
+
+  return <button onClick={handleDrillIn}>Open Detail</button>;
+};
+```
+
+### Key Details
+
+- The `useSidePane()` hook can only be called within a descendant of `ZestResponsiveLayout`.
+- Each call to `openSidePane()` appends one entry to the stack. Calling it from within a stacked side pane is the intended pattern for nested navigation.
+- The `closeSidePane()` method pops the topmost entry. The close button (x) in the side pane header invokes this method automatically.
+- The `stackLength` value can be used to display a "back" indicator or to conditionally render navigation controls.
