@@ -85,10 +85,24 @@ Returns an object with the following members:
 
 | Member | Type | Description |
 | :--- | :--- | :--- |
-| `openSidePane` | `(config: ISidePaneConfig) => void` | Pushes a new side pane onto the stack. The content, title, and callbacks are provided via the config object. |
-| `closeSidePane` | `() => void` | Pops the topmost side pane from the stack. The pane's `onClose` callback is invoked before removal. |
+| `openSidePane` | `<TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>` | Pushes a new side pane onto the stack. Returns a Promise that resolves with the result passed to `closeSidePane()` when that pane is closed. |
+| `closeSidePane` | `<TResult = unknown>(result?: TResult) => void` | Pops the topmost side pane from the stack. The pane's `onClose` is invoked before removal. An optional `result` is passed back to the opener's Promise and broadcast to all subscribers. |
+| `subscribe` | `(listener: SidePaneListener) => () => void` | Subscribes to all close events. Returns an unsubscribe function. Each listener receives `{ paneId, result }`. |
 | `stack` | `InternalConfig[]` | The current stack of side panes. Intended for inspection; direct mutation is not supported. |
 | `stackLength` | `number` | The number of panes currently in the stack. |
+
+### Interface: `SidePaneCloseEvent`
+
+| Prop | Type | Description |
+| :--- | :--- | :--- |
+| `paneId` | `string` | The unique `_id` of the pane that was closed. |
+| `result` | `unknown` | The result value passed to `closeSidePane(result)`, or `undefined`. |
+
+### Type: `SidePaneListener`
+
+```ts
+type SidePaneListener = (event: SidePaneCloseEvent) => void;
+```
 
 ### Interface: `ISidePaneConfig`
 
@@ -103,6 +117,110 @@ Returns an object with the following members:
 ### Data Preservation
 
 All side panes in the stack remain mounted in the DOM. Hidden panes are visually concealed through CSS (`opacity: 0`, `pointer-events: none`, `transform: translateX(110%)`) but are never unmounted. This guarantees that form inputs, scroll positions, and component state within each pane are retained across open and close cycles.
+
+### Return Values (v2.5.0+)
+
+When a side pane is closed, it can pass a result back to the opener. Two mechanisms are available.
+
+#### Promise-based (recommended)
+
+`openSidePane()` returns a `Promise<TResult>` that resolves when the pane is closed:
+
+```tsx
+const ItemList = () => {
+  const { openSidePane } = useSidePane();
+
+  const handleEdit = async (item: Item) => {
+    const result = await openSidePane<{ saved: boolean }>({
+      title: "Edit Item",
+      content: <ItemEditor item={item} />,
+    });
+    if (result?.saved) {
+      refreshList(); // user saved - update the list
+    }
+  };
+};
+
+const ItemEditor = ({ item }: { item: Item }) => {
+  const { closeSidePane } = useSidePane();
+
+  const handleSave = () => {
+    // ... save logic
+    closeSidePane({ saved: true }); // resolves the opener's Promise
+  };
+};
+```
+
+To emulate an `onResult` callback style, use `.then()`:
+
+```tsx
+openSidePane<{ saved: boolean }>({ title: "Edit", content: <Editor /> })
+  .then(result => { if (result?.saved) refreshList(); });
+```
+
+Or wrap it in a utility for reusable patterns:
+
+```tsx
+function openWithResult<T>(
+  open: (config: ISidePaneConfig) => Promise<T>,
+  config: ISidePaneConfig,
+  onResult: (result: T) => void,
+) {
+  open<T>(config).then(onResult);
+}
+```
+
+#### Broadcast subscription
+
+For decoupled components or third-party consumers that need to observe all close events, use `subscribe`:
+
+```tsx
+const Monitor = () => {
+  const { subscribe } = useSidePane();
+
+  useEffect(() => {
+    const unsub = subscribe(({ paneId, result }) => {
+      console.log(`Pane ${paneId} closed with`, result);
+    });
+    return unsub; // cleanup on unmount
+  }, [subscribe]);
+
+  return null;
+};
+```
+
+The `subscribe` method returns an unsubscribe function. Always call it in your `useEffect` cleanup to prevent stale listeners.
+
+#### Close button behavior
+
+The built-in close button (×) in the side pane header calls `closeSidePane()` with no result. The opener's Promise resolves with `undefined`. Consumers should check for this:
+
+```tsx
+const result = await openSidePane<{ saved: boolean }>({ content: <Editor /> });
+if (result?.saved) { /* saved */ }
+// If the user clicked ×, result is undefined - handled gracefully
+```
+
+#### Class component support
+
+Both `withSidePane(P)` and `SidePaneConsumer` expose the full `openSidePane`, `closeSidePane`, and `subscribe` APIs:
+
+```tsx
+// HOC
+class MyComponent extends React.Component<MyProps> {
+  async handleOpen() {
+    const result = await this.props.openSidePane({ content: <Editor /> });
+    // handle result
+  }
+}
+
+// Consumer
+<SidePaneConsumer>
+  {({ openSidePane, subscribe }) => (
+    <MyComponent open={openSidePane} subscribe={subscribe} />
+  )}
+</SidePaneConsumer>
+```
 
 ---
 
@@ -138,8 +256,9 @@ export default withSidePane(MyComponent);
 
 | Prop | Type | Description |
 | :--- | :--- | :--- |
-| `openSidePane` | `(config: ISidePaneConfig) => void` | Pushes a new side pane onto the stack. |
-| `closeSidePane` | `() => void` | Pops the topmost side pane from the stack. |
+| `openSidePane` | `<TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>` | Pushes a new side pane onto the stack. Returns a Promise that resolves with the close result. |
+| `closeSidePane` | `<TResult = unknown>(result?: TResult) => void` | Pops the topmost pane, passing an optional result to the opener. |
+| `subscribe` | `(listener: SidePaneListener) => () => void` | Subscribes to all close events. Returns an unsubscribe function. |
 | `stackLength` | `number` | The number of panes currently in the stack. |
 
 ### Consumer: `SidePaneConsumer`
@@ -168,8 +287,9 @@ class MyComponent extends React.Component {
 
 ```tsx
 export interface SidePaneContextValue {
-  openSidePane: (config: ISidePaneConfig) => void;
-  closeSidePane: () => void;
+  openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+  closeSidePane: <TResult = unknown>(result?: TResult) => void;
+  subscribe: (listener: SidePaneListener) => () => void;
   stack: InternalConfig[];
   stackLength: number;
 }
@@ -179,8 +299,9 @@ export interface SidePaneContextValue {
 
 ```tsx
 export interface WithSidePaneProps {
-  openSidePane: (config: ISidePaneConfig) => void;
-  closeSidePane: () => void;
+  openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+  closeSidePane: <TResult = unknown>(result?: TResult) => void;
+  subscribe: (listener: SidePaneListener) => () => void;
   stackLength: number;
 }
 ```

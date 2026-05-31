@@ -6,12 +6,71 @@ A record of changes across major versions that may require manual intervention w
 
 ## Table of Contents
 
+- [Version 2.5.0 (Return Values &amp; Subscription)](#version-250-return-values--subscription)
 - [Version 2.4.0 (Manual Provider Requirement)](#version-240-manual-provider-requirement)
 - [Version 2.3.1 (Mobile Outside Click Fix)](#version-231-mobile-outside-click-fix)
 - [Version 2.3.0 (Side Pane Stack API)](#version-230-side-pane-stack-api)
 - [Version 2.1.0 (Side Pane Stack API)](#version-210-side-pane-stack-api)
 - [Version 2.0.0 (The Gold Standard)](#version-200-the-gold-standard)
 - [Version 1.1.0](#version-110)
+
+---
+
+## Version 2.5.0 (Return Values & Subscription)
+
+Version 2.5.0 adds Promise-based return values to `openSidePane` and an event subscription mechanism. This is a **backward-compatible** feature addition — no existing code breaks.
+
+### Added: `openSidePane()` returns `Promise<TResult>`
+
+The `openSidePane()` method now returns a `Promise<TResult>`. When a pane calls `closeSidePane(result)`, the opener's Promise resolves with that result.
+
+**Before (v2.4.x):**
+```ts
+openSidePane({ content: <Editor /> });
+// no way to know what happened in the editor
+```
+
+**After (v2.5.0):**
+```ts
+const result = await openSidePane<{ saved: boolean }>({ content: <Editor /> });
+if (result?.saved) refresh();
+```
+
+**Migration:** Existing callers that ignore the return value continue to work. The return type changes from `void` to `Promise<unknown>`, but TypeScript allows discarding a Promise return value, and the Promise never throws.
+
+### Added: `closeSidePane(result?)`
+
+The `closeSidePane()` method now accepts an optional `result` parameter.
+
+**Before (v2.4.x):**
+```ts
+closeSidePane();
+```
+
+**After (v2.5.0):**
+```ts
+closeSidePane({ saved: true });
+closeSidePane(); // still works — result is undefined
+```
+
+**Migration:** Existing `closeSidePane()` calls without arguments work identically. No code changes required.
+
+### Added: `subscribe(listener)`
+
+A new `subscribe` method on the context allows decoupled components to observe all close events.
+
+```ts
+const unsub = subscribe(({ paneId, result }) => {
+  console.log(`Pane ${paneId} closed with`, result);
+});
+return unsub; // cleanup
+```
+
+**Migration:** No migration needed. This is a new feature with no existing equivalent.
+
+### Unaffected Consumers
+
+All existing code powered by the `sidePane` prop (without the stack API) is completely unaffected.
 
 ---
 

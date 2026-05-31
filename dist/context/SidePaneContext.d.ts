@@ -10,9 +10,15 @@ export interface ISidePaneConfig {
 interface InternalConfig extends ISidePaneConfig {
     _id: string;
 }
+export interface SidePaneCloseEvent {
+    paneId: string;
+    result: unknown;
+}
+export type SidePaneListener = (event: SidePaneCloseEvent) => void;
 export interface SidePaneContextValue {
-    openSidePane: (config: ISidePaneConfig) => void;
-    closeSidePane: () => void;
+    openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+    closeSidePane: <TResult = unknown>(result?: TResult) => void;
+    subscribe: (listener: SidePaneListener) => () => void;
     stack: InternalConfig[];
     stackLength: number;
 }
@@ -21,8 +27,9 @@ export declare const SidePaneProvider: React.FC<{
 }>;
 export declare const useSidePane: () => SidePaneContextValue;
 export interface WithSidePaneProps {
-    openSidePane: (config: ISidePaneConfig) => void;
-    closeSidePane: () => void;
+    openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+    closeSidePane: <TResult = unknown>(result?: TResult) => void;
+    subscribe: (listener: SidePaneListener) => () => void;
     stackLength: number;
 }
 export declare function withSidePane<P extends WithSidePaneProps>(Component: React.ComponentType<P>): React.FC<Omit<P, keyof WithSidePaneProps>>;

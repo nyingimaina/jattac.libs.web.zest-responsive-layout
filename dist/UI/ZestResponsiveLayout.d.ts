@@ -1,6 +1,6 @@
 import React from "react";
 import { SidePaneProvider, useSidePane, ISidePaneConfig, withSidePane, SidePaneConsumer } from "../context/SidePaneContext";
-import type { SidePaneContextValue, WithSidePaneProps } from "../context/SidePaneContext";
+import type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener } from "../context/SidePaneContext";
 export interface IProps {
     children?: React.ReactNode;
     detailPane?: React.ReactNode;
@@ -26,5 +26,5 @@ export interface IProps {
     style?: React.CSSProperties;
 }
 export { ISidePaneConfig, useSidePane, SidePaneProvider, withSidePane, SidePaneConsumer };
-export type { SidePaneContextValue, WithSidePaneProps };
+export type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener };
 export declare const ZestResponsiveLayout: React.FC<IProps>;

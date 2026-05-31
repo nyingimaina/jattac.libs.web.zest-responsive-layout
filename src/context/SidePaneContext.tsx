@@ -13,9 +13,17 @@ interface InternalConfig extends ISidePaneConfig {
   _id: string;
 }
 
+export interface SidePaneCloseEvent {
+  paneId: string;
+  result: unknown;
+}
+
+export type SidePaneListener = (event: SidePaneCloseEvent) => void;
+
 export interface SidePaneContextValue {
-  openSidePane: (config: ISidePaneConfig) => void;
-  closeSidePane: () => void;
+  openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+  closeSidePane: <TResult = unknown>(result?: TResult) => void;
+  subscribe: (listener: SidePaneListener) => () => void;
   stack: InternalConfig[];
   stackLength: number;
 }
@@ -25,20 +33,37 @@ const SidePaneContext = createContext<SidePaneContextValue | null>(null);
 export const SidePaneProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const idCounterRef = useRef(0);
   const [stack, setStack] = useState<InternalConfig[]>([]);
+  const pendingResolvesRef = useRef<Map<string, (result: unknown) => void>>(new Map());
+  const listenersRef = useRef<Set<SidePaneListener>>(new Set());
 
-  const openSidePane = useCallback((config: ISidePaneConfig) => {
+  const openSidePane = useCallback(<TResult,>(config: ISidePaneConfig): Promise<TResult> => {
     const id = `zest-sidepane-${++idCounterRef.current}`;
-    const internal: InternalConfig = { ...config, _id: id };
-    setStack(prev => [...prev, internal]);
+    return new Promise<TResult>((resolve) => {
+      pendingResolvesRef.current.set(id, resolve as (result: unknown) => void);
+      const internal: InternalConfig = { ...config, _id: id };
+      setStack(prev => [...prev, internal]);
+    });
   }, []);
 
-  const closeSidePane = useCallback(() => {
+  const closeSidePane = useCallback(<TResult,>(result?: TResult) => {
     setStack(prev => {
       if (prev.length === 0) return prev;
       const top = prev[prev.length - 1];
       top.onClose?.();
+      const resolve = pendingResolvesRef.current.get(top._id);
+      resolve?.(result);
+      pendingResolvesRef.current.delete(top._id);
+      const event: SidePaneCloseEvent = { paneId: top._id, result };
+      listenersRef.current.forEach(l => l(event));
       return prev.slice(0, -1);
     });
+  }, []);
+
+  const subscribe = useCallback((listener: SidePaneListener): () => void => {
+    listenersRef.current.add(listener);
+    return () => {
+      listenersRef.current.delete(listener);
+    };
   }, []);
 
   return (
@@ -46,6 +71,7 @@ export const SidePaneProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       value={{
         openSidePane,
         closeSidePane,
+        subscribe,
         stack,
         stackLength: stack.length,
       }}
@@ -58,14 +84,21 @@ export const SidePaneProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useSidePane = (): SidePaneContextValue => {
   const ctx = useContext(SidePaneContext);
   if (!ctx) {
-    return { openSidePane: () => {}, closeSidePane: () => {}, stack: [], stackLength: 0 };
+    return {
+      openSidePane: <TResult,>(_config: ISidePaneConfig) => Promise.resolve<TResult>(undefined as unknown as TResult),
+      closeSidePane: <TResult,>(_result?: TResult) => {},
+      subscribe: (_listener: SidePaneListener) => () => {},
+      stack: [],
+      stackLength: 0,
+    };
   }
   return ctx;
 };
 
 export interface WithSidePaneProps {
-  openSidePane: (config: ISidePaneConfig) => void;
-  closeSidePane: () => void;
+  openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+  closeSidePane: <TResult = unknown>(result?: TResult) => void;
+  subscribe: (listener: SidePaneListener) => () => void;
   stackLength: number;
 }
 
@@ -75,7 +108,7 @@ export function withSidePane<P extends WithSidePaneProps>(
   const displayName = Component.displayName || Component.name || "Component";
   const Wrapped: React.FC<Omit<P, keyof WithSidePaneProps>> = (props) => {
     const sidePane = useSidePane();
-    return <Component {...(props as P)} {...(sidePane as WithSidePaneProps)} />;
+    return <Component {...(props as P)} {...(sidePane as unknown as WithSidePaneProps)} />;
   };
   Wrapped.displayName = `withSidePane(${displayName})`;
   return Wrapped;

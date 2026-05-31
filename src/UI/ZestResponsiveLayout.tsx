@@ -6,7 +6,7 @@ import { useIsHydrated } from "../hooks/useIsHydrated";
 import { DetailPane } from "./DetailPane";
 import { SidePane } from "./SidePane";
 import { SidePaneProvider, useSidePane, ISidePaneConfig, withSidePane, SidePaneConsumer } from "../context/SidePaneContext";
-import type { SidePaneContextValue, WithSidePaneProps } from "../context/SidePaneContext";
+import type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener } from "../context/SidePaneContext";
 
 export interface IProps {
   children?: React.ReactNode;
@@ -38,7 +38,7 @@ export interface IProps {
 }
 
 export { ISidePaneConfig, useSidePane, SidePaneProvider, withSidePane, SidePaneConsumer };
-export type { SidePaneContextValue, WithSidePaneProps };
+export type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener };
 
 export const ZestResponsiveLayout: React.FC<IProps> = ({
   children,

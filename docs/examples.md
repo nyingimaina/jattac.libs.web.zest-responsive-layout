@@ -534,6 +534,126 @@ const App = () => {
 - Any React state, refs, timers, or subscriptions within each pane continue to function normally across hide and show cycles.
 - The only data that is reset is component state that is explicitly cleaned up by the consumer (e.g., in a `useEffect` cleanup function).
 
+### Return Values (v2.5.0+)
+
+When a side pane is closed, it can pass a result back to the pane that opened it. This enables patterns like "open an editor in a side pane and act on the result when done".
+
+#### Promise-based (await)
+
+The opener awaits the Promise returned by `openSidePane()`:
+
+```tsx
+import {
+  ZestResponsiveLayout,
+  SidePaneProvider,
+  useSidePane,
+} from 'jattac.libs.web.zest-responsive-layout';
+import { useState } from 'react';
+
+const Dashboard = () => {
+  const { openSidePane } = useSidePane();
+  const [items, setItems] = useState(['Alpha', 'Beta', 'Gamma']);
+
+  const handleEdit = async (name: string) => {
+    const result = await openSidePane<{ newName: string }>({
+      title: `Rename ${name}`,
+      content: <RenameForm current={name} />,
+    });
+    if (result?.newName) {
+      setItems(prev => prev.map(i => i === name ? result.newName : i));
+    }
+  };
+
+  return (
+    <ul>
+      {items.map(name => (
+        <li key={name}>
+          {name} <button onClick={() => handleEdit(name)}>Rename</button>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+const RenameForm = ({ current }: { current: string }) => {
+  const [value, setValue] = useState(current);
+  const { closeSidePane } = useSidePane();
+
+  return (
+    <div>
+      <input value={value} onChange={e => setValue(e.target.value)} />
+      <button onClick={() => closeSidePane({ newName: value })}>Save</button>
+      <button onClick={() => closeSidePane()}>Cancel</button>
+    </div>
+  );
+};
+```
+
+**Flow:**
+
+1. User clicks Rename on "Alpha".
+2. `RenameForm` opens in a side pane with the current name pre-filled.
+3. User types "Alphonso" and clicks Save.
+4. `closeSidePane({ newName: "Alphonso" })` resolves the opener's Promise.
+5. `Dashboard` receives `{ newName: "Alphonso" }` and updates the list.
+6. If the user clicks Cancel (or the × button), `closeSidePane()` is called with no argument. The Promise resolves with `undefined`. The `result?.newName` check handles this gracefully — nothing happens.
+
+#### Callback style via .then()
+
+```tsx
+openSidePane<{ saved: boolean }>({ title: "Edit", content: <Editor /> })
+  .then(result => { if (result?.saved) refreshList(); });
+```
+
+#### Broadcast subscription
+
+Third-party or decoupled components can observe all close events:
+
+```tsx
+const AuditLogger = () => {
+  const { subscribe } = useSidePane();
+
+  useEffect(() => {
+    return subscribe(({ paneId, result }) => {
+      console.log(`[Audit] Pane ${paneId} closed with`, result);
+    });
+  }, [subscribe]);
+
+  return null;
+};
+```
+
+The subscribe callback receives `{ paneId: string; result: unknown }`. The returned unsubscribe function should be called in `useEffect` cleanup.
+
+#### Class components
+
+```tsx
+// withSidePane HOC
+class MyComponent extends React.Component<MyProps> {
+  async handleOpen() {
+    const result = await this.props.openSidePane<{ saved: boolean }>({
+      content: <Editor />,
+    });
+    if (result?.saved) this.refresh();
+  }
+}
+
+// SidePaneConsumer
+<SidePaneConsumer>
+  {({ openSidePane, subscribe }) => (
+    <div>
+      <button onClick={() => openSidePane({ content: <Editor /> }).then(r => {
+        if (r?.saved) refresh();
+      })}>
+        Open
+      </button>
+    </div>
+  )}
+</SidePaneConsumer>
+```
+
+---
+
 ### Nesting with Form State Preservation
 
 A common requirement is to have a form inside one side pane that remains filled in while the user drills into a reference data lookup in another side pane. The stack API handles this inherently.
