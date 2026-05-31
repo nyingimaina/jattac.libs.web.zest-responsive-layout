@@ -82,7 +82,7 @@ Controls the opening bounce animation of the side pane.
 
 ## Side Pane Stack Configuration
 
-The side pane stack API does not require configuration props on the layout component itself. The `SidePaneProvider` is automatically wrapped around every `ZestResponsiveLayout` instance.
+The side pane stack API does not require configuration props on the layout component itself. Since v2.4.0, you must wrap a `SidePaneProvider` at the application root to use `useSidePane()`, `withSidePane()`, or `SidePaneConsumer`.
 
 ### Usage
 
@@ -104,7 +104,7 @@ const MyComponent = () => {
 
 ### Key Details
 
-- The `useSidePane()` hook can only be called within a descendant of `ZestResponsiveLayout`.
+- The `useSidePane()` hook must be called within a descendant of `SidePaneProvider`.
 - Each call to `openSidePane()` appends one entry to the stack. Calling it from within a stacked side pane is the intended pattern for nested navigation.
 - The `closeSidePane()` method pops the topmost entry. The close button (x) in the side pane header invokes this method automatically.
 - The `stackLength` value can be used to display a "back" indicator or to conditionally render navigation controls.

@@ -39,7 +39,7 @@ Class components can access the side pane stack API via the `withSidePane` highe
 ### withSidePane HOC
 
 ```tsx
-import { withSidePane, WithSidePaneProps } from 'jattac.libs.web.zest-responsive-layout';
+import { withSidePane, SidePaneProvider, WithSidePaneProps } from 'jattac.libs.web.zest-responsive-layout';
 import React from 'react';
 
 interface MyProps extends WithSidePaneProps {}
@@ -81,24 +81,28 @@ class MyComponent extends React.Component {
 
 ## Quick Start
 
+> **v2.4.0:** `SidePaneProvider` must now be wrapped manually at the app root if using the stack API (`useSidePane`, `withSidePane`, `SidePaneConsumer`). If you only use the `sidePane` prop, the provider is optional. See [Breaking Changes](docs/breaking-changes.md#version-240-manual-provider-requirement).
+
 ```tsx
-import { ZestResponsiveLayout } from 'jattac.libs.web.zest-responsive-layout';
+import { ZestResponsiveLayout, SidePaneProvider } from 'jattac.libs.web.zest-responsive-layout';
 import { useState } from 'react';
 
 const App = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: isOpen,
-        title: "Navigation",
-        content: <nav>Sidebar Content</nav>,
-        onClose: () => setIsOpen(false)
-      }}
-    >
-      <main>Main Application Content</main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: isOpen,
+          title: "Navigation",
+          content: <nav>Sidebar Content</nav>,
+          onClose: () => setIsOpen(false)
+        }}
+      >
+        <main>Main Application Content</main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```

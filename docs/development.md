@@ -29,7 +29,6 @@ src/
     useDraggable.ts            - Desktop drag repositioning logic
     useIsHydrated.ts           - SSR hydration guard
     useIsMobile.ts             - Responsive breakpoint detection
-    useOutsideClick.ts         - Click-outside detection
   Styles/
     ZestResponsiveLayout.module.css  - Scoped CSS styles
   types/

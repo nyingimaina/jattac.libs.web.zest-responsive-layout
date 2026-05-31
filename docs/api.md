@@ -59,7 +59,25 @@ When using the stack API, each push adds a new side pane to the top of the stack
 
 ### Context: `SidePaneProvider`
 
-The `SidePaneProvider` is automatically wrapped around every `ZestResponsiveLayout` instance. Consumers do not need to add it manually.
+Since v2.4.0, `SidePaneProvider` is no longer automatically wrapped around `ZestResponsiveLayout`. Consumers using the side pane stack API (`useSidePane`, `withSidePane`, or `SidePaneConsumer`) must wrap a single `SidePaneProvider` at an appropriate ancestor level, typically at the application root.
+
+**Important:** You only need ONE provider for your entire application, not one per layout instance. Place it above all components that may call `useSidePane()`, regardless of how many `ZestResponsiveLayout` instances exist.
+
+```tsx
+import { SidePaneProvider, ZestResponsiveLayout } from 'jattac.libs.web.zest-responsive-layout';
+
+function App() {
+  return (
+    <SidePaneProvider>
+      <ZestResponsiveLayout ...>
+        ...
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
+  );
+}
+```
+
+If your application only uses the `sidePane` prop (without the stack API), the provider is optional — `useSidePane()` degrades gracefully to harmless no-ops.
 
 ### Hook: `useSidePane()`
 

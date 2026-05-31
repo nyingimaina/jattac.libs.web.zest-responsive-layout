@@ -6,11 +6,53 @@ A record of changes across major versions that may require manual intervention w
 
 ## Table of Contents
 
+- [Version 2.4.0 (Manual Provider Requirement)](#version-240-manual-provider-requirement)
 - [Version 2.3.1 (Mobile Outside Click Fix)](#version-231-mobile-outside-click-fix)
 - [Version 2.3.0 (Side Pane Stack API)](#version-230-side-pane-stack-api)
 - [Version 2.1.0 (Side Pane Stack API)](#version-210-side-pane-stack-api)
 - [Version 2.0.0 (The Gold Standard)](#version-200-the-gold-standard)
 - [Version 1.1.0](#version-110)
+
+---
+
+## Version 2.4.0 (Manual Provider Requirement)
+
+Version 2.4.0 removes the automatic `SidePaneProvider` wrapping from `ZestResponsiveLayout`. Consumers using the side pane stack API must now wrap a provider manually at the application root.
+
+### Removed: Automatic SidePaneProvider
+
+**Before (v2.3.x):**
+```tsx
+// The provider was auto-injected; consumers could use useSidePane() directly
+<ZestResponsiveLayout sidePane={{...}}>
+  <MyComponent /> {/* useSidePane() works here */}
+</ZestResponsiveLayout>
+```
+
+**After (v2.4.0):**
+```tsx
+import { SidePaneProvider, ZestResponsiveLayout } from 'jattac.libs.web.zest-responsive-layout';
+
+// Consumer wraps their own provider
+<SidePaneProvider>
+  <ZestResponsiveLayout sidePane={{...}}>
+    <MyComponent /> {/* useSidePane() works here */};
+  </ZestResponsiveLayout>
+</SidePaneProvider>
+```
+
+### Rationale
+
+The auto-provider pattern prevented consumers from using the `useSidePane()` hook outside of `ZestResponsiveLayout` and caused issues with multiple layout instances competing for separate providers. Moving the provider to the consumer grants full control over the provider scope.
+
+### Safe Degradation
+
+`useSidePane()` now returns harmless no-ops (`openSidePane`, `closeSidePane` are empty functions, `stack` is `[]`, `stackLength` is `0`) when called outside a `SidePaneProvider`. It no longer throws. This means the `sidePane` prop continues to work without a provider — the breaking change only affects consumers using the stack API (`useSidePane`, `withSidePane`, `SidePaneConsumer`).
+
+### Unaffected Consumers
+
+- Applications using only the `sidePane` prop (no `useSidePane()` calls, no `withSidePane()` HOC, no `SidePaneConsumer`).
+- Tests that render `ZestResponsiveLayout` without a provider continue to work (the legacy `sidePane` prop path handles this gracefully).
 
 ---
 
@@ -76,7 +118,7 @@ openSidePane({
 });
 ```
 
-No manual provider wrapping is required. The `SidePaneProvider` is automatically included inside every `ZestResponsiveLayout` instance.
+**Note for v2.4.0+:** This is no longer the case. See [Version 2.4.0](#version-240-manual-provider-requirement) for the new provider requirement.
 
 ---
 

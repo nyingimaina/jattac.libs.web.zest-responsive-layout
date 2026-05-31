@@ -163,6 +163,7 @@ The `useSidePane()` hook is the primary API for function components. It returns 
 ```tsx
 import {
   ZestResponsiveLayout,
+  SidePaneProvider,
   useSidePane,
   ISidePaneConfig
 } from 'jattac.libs.web.zest-responsive-layout';
@@ -212,18 +213,20 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: isOpen,
-        title: "Projects",
-        content: <ItemList />,
-        onClose: () => setIsOpen(false)
-      }}
-    >
-      <main>
-        <button onClick={() => setIsOpen(true)}>Open Projects</button>
-      </main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: isOpen,
+          title: "Projects",
+          content: <ItemList />,
+          onClose: () => setIsOpen(false)
+        }}
+      >
+        <main>
+          <button onClick={() => setIsOpen(true)}>Open Projects</button>
+        </main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```
@@ -235,6 +238,7 @@ Class components can use the `withSidePane` higher-order component, which inject
 ```tsx
 import {
   ZestResponsiveLayout,
+  SidePaneProvider,
   withSidePane,
   WithSidePaneProps,
   ISidePaneConfig
@@ -276,15 +280,17 @@ const ProjectListWithSidePane = withSidePane(ProjectList);
 
 const App = () => {
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: true,
-        title: "Projects",
-        content: <ProjectListWithSidePane />
-      }}
-    >
-      <main>Main Content</main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: true,
+          title: "Projects",
+          content: <ProjectListWithSidePane />
+        }}
+      >
+        <main>Main Content</main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```
@@ -296,6 +302,7 @@ An alternative for class components is the `SidePaneConsumer` render-prop compon
 ```tsx
 import {
   ZestResponsiveLayout,
+  SidePaneProvider,
   SidePaneConsumer
 } from 'jattac.libs.web.zest-responsive-layout';
 import React from 'react';
@@ -355,15 +362,17 @@ class TaskList extends React.Component<{}, TaskListState> {
 
 const App = () => {
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: true,
-        title: "Task Manager",
-        content: <TaskList />
-      }}
-    >
-      <main>Main Content</main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: true,
+          title: "Task Manager",
+          content: <TaskList />
+        }}
+      >
+        <main>Main Content</main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```
@@ -377,6 +386,7 @@ The following example demonstrates four levels of nesting with form data preserv
 ```tsx
 import {
   ZestResponsiveLayout,
+  SidePaneProvider,
   useSidePane
 } from 'jattac.libs.web.zest-responsive-layout';
 import { useState } from 'react';
@@ -487,18 +497,20 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: isOpen,
-        title: "Order Management",
-        content: <OrderList />,
-        onClose: () => setIsOpen(false)
-      }}
-    >
-      <main>
-        <button onClick={() => setIsOpen(true)}>Open Orders</button>
-      </main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: isOpen,
+          title: "Order Management",
+          content: <OrderList />,
+          onClose: () => setIsOpen(false)
+        }}
+      >
+        <main>
+          <button onClick={() => setIsOpen(true)}>Open Orders</button>
+        </main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```
@@ -529,6 +541,7 @@ A common requirement is to have a form inside one side pane that remains filled 
 ```tsx
 import {
   ZestResponsiveLayout,
+  SidePaneProvider,
   useSidePane
 } from 'jattac.libs.web.zest-responsive-layout';
 import { useState } from 'react';
@@ -638,18 +651,20 @@ const App = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <ZestResponsiveLayout
-      sidePane={{
-        visible: isOpen,
-        title: "Customer",
-        content: <CustomerForm />,
-        onClose: () => setIsOpen(false)
-      }}
-    >
-      <main>
-        <button onClick={() => setIsOpen(true)}>Open Customer Form</button>
-      </main>
-    </ZestResponsiveLayout>
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: isOpen,
+          title: "Customer",
+          content: <CustomerForm />,
+          onClose: () => setIsOpen(false)
+        }}
+      >
+        <main>
+          <button onClick={() => setIsOpen(true)}>Open Customer Form</button>
+        </main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
   );
 };
 ```

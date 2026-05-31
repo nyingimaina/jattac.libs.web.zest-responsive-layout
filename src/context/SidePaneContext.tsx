@@ -58,7 +58,7 @@ export const SidePaneProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 export const useSidePane = (): SidePaneContextValue => {
   const ctx = useContext(SidePaneContext);
   if (!ctx) {
-    throw new Error("useSidePane must be used within a SidePaneProvider.");
+    return { openSidePane: () => {}, closeSidePane: () => {}, stack: [], stackLength: 0 };
   }
   return ctx;
 };

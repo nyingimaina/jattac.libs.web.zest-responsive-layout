@@ -40,7 +40,7 @@ export interface IProps {
 export { ISidePaneConfig, useSidePane, SidePaneProvider, withSidePane, SidePaneConsumer };
 export type { SidePaneContextValue, WithSidePaneProps };
 
-const ZestResponsiveLayoutInner: React.FC<IProps> = ({
+export const ZestResponsiveLayout: React.FC<IProps> = ({
   children,
   detailPane,
   sidePane,
@@ -170,8 +170,4 @@ const ZestResponsiveLayoutInner: React.FC<IProps> = ({
   );
 };
 
-export const ZestResponsiveLayout: React.FC<IProps> = (props) => (
-  <SidePaneProvider>
-    <ZestResponsiveLayoutInner {...props} />
-  </SidePaneProvider>
-);
+
