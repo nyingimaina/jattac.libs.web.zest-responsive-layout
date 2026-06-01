@@ -62,8 +62,6 @@ interface IProps {
     closeOnDesktopOverlayClick?: boolean;
     className?: string;
     style?: React.CSSProperties;
-    /** Suppress the dev-mode error when this layout is nested inside another layout's active sidepane stack. */
-    suppressNestedStackWarning?: boolean;
 }
 
 declare const ZestResponsiveLayout: React.FC<IProps>;

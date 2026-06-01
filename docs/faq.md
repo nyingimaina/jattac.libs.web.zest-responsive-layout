@@ -4,9 +4,9 @@
 
 ### Why does my page freeze when I nest ZestResponsiveLayout inside a sidepane?
 
-This happens because all `ZestResponsiveLayout` instances share a single global `SidePaneContext`. When a sidepane is opened programmatically (via `openSidePane()`), the context stack contains the sidepane's content. Every `ZestResponsiveLayout` in the tree that lacks its own `sidePane` prop will try to render that entire stack.
+This was a bug in versions prior to **2.5.1**. It happened because all `ZestResponsiveLayout` instances share a single global `SidePaneContext`. When a sidepane is opened programmatically (via `openSidePane()`), the context stack contains the sidepane's content. Every `ZestResponsiveLayout` in the tree that lacked its own `sidePane` prop would try to render that entire stack.
 
-If your component tree looks like this:
+If your component tree looked like this:
 
 ```
 <App>
@@ -27,9 +27,11 @@ If your component tree looks like this:
 </App>
 ```
 
-Layout B sees `stackLength > 0`, renders all stack items (including `<Details>`, which contains Layout B), and React enters an infinite render loop → stack overflow → browser freeze.
+Layout B would see `stackLength > 0`, render all stack items (including `<Details>`, which contains Layout B), and React would enter an infinite render loop → stack overflow → browser freeze.
 
-### How do I fix it?
+**Fixed in v2.5.1+:** When a `ZestResponsiveLayout` has its own `sidePane` prop, it now renders that prop's sidepane instead of the context stack. This breaks the self-referential cycle. A nested layout with `sidePane={{ visible: false }}` will render nothing for its own sidepane area, ignoring the ancestor's context stack entirely.
+
+### How do I fix it in my code?
 
 #### Option A (recommended): Give the nested layout its own `sidePane` prop
 
@@ -87,49 +89,36 @@ If you genuinely need independent programmatic sidepane stacks, wrap the nested 
 </SidePaneProvider>
 ```
 
-### What if I can't fix it right now?
+### Stale entries with a global SidePaneProvider
 
-Add `suppressNestedStackWarning` as a temporary workaround:
+If `SidePaneProvider` wraps your entire application, entries pushed via `openSidePane()` persist across page navigation. This is expected behavior — the provider is global so the stack outlives individual pages.
 
-```tsx
-<ZestResponsiveLayout suppressNestedStackWarning>
-  ...
-</ZestResponsiveLayout>
-```
+If a page renders without calling `openSidePane()` but a previous page left stale entries, the stack will be non-empty. A `ZestResponsiveLayout` without its own `sidePane` prop will render those stale entries as sidepanes. This is usually not what you want.
 
-This suppresses the dev-mode error and falls through to the safe rendering path (your own `sidePane` prop takes priority). Do **not** rely on this permanently — restructure your code following one of the options above.
+Solutions:
 
-### What is the correct pattern?
+- **Per-page providers**: Scope `SidePaneProvider` per page so it auto-cleans on navigation.
+- **`closeSidePane()` on navigate**: Call `closeSidePane()` during your page's cleanup/unmount phase.
+- **Use `sidePane` prop**: Give each layout its own `sidePane` prop so it ignores the context stack entirely. This is the most explicit and predictable approach.
 
-Each `ZestResponsiveLayout` should manage its own sidepanes independently via the `sidePane` prop. The context stack (`SidePaneProvider` / `openSidePane()`) is designed for the top-level layout that hosts the provider. Nested layouts should use the declarative `sidePane` prop — even for programmatic-like scenarios, manage visibility via React state and pass it to `sidePane.visible`.
+### A layout relying on `openSidePane` (no sidePane prop)
 
-**Correct:**
+A `ZestResponsiveLayout` without a `sidePane` prop that uses `openSidePane()` is a **supported pattern**. When there is no local `sidePane` prop, the layout falls through to rendering the context stack. This is how programmatic sidepanes work:
 
 ```tsx
-// Top-level layout — renders programmatic sidepanes via context stack
+// This layout renders nothing in the sidepane area initially,
+// but will show content when openSidePane() is called.
 <SidePaneProvider>
   <ZestResponsiveLayout>
-    ...
+    <button onClick={() => openSidePane({ content: <Panel /> })} />
   </ZestResponsiveLayout>
 </SidePaneProvider>
-
-// Nested layout — manages its own sidepane declaratively
-<ZestResponsiveLayout sidePane={{ visible: isOpen, content: <Panel /> }}>
-  ...
-</ZestResponsiveLayout>
 ```
 
-**Anti-pattern:**
-
-```tsx
-// Nested layout without own sidePane prop — reads ancestor's stack
-<ZestResponsiveLayout>
-  ...  // will try to render ancestor's stack items
-</ZestResponsiveLayout>
-```
+This pattern is safe as long as the context stack's content does not contain this same `ZestResponsiveLayout` (which would create the self-referential cycle fixed in v2.5.1).
 
 ### What about keepMounted?
 
-When `keepMounted: true` (the default for context stack items), non-visible sidepanes are hidden with CSS (`display: none`) but React **still executes their render functions**. This means the entire content tree is alive and can trigger side effects, context reads, and — in this bug — self-referential rendering.
+When `keepMounted: true` (the default for context stack items), non-visible sidepanes are hidden with CSS (`display: none`) but React **still executes their render functions**. This means the entire content tree is alive and can trigger side effects, context reads, and — in the original bug — self-referential rendering.
 
-This is why the stack overflow happens even when only one sidepane is visually open: all stack items are still rendering their React trees.
+This was why the stack overflow happened even when only one sidepane was visually open: all stack items were still rendering their React trees.
