@@ -6,6 +6,7 @@ import { useIsHydrated } from "../hooks/useIsHydrated";
 import { DetailPane } from "./DetailPane";
 import { SidePane } from "./SidePane";
 import { SidePaneProvider, useSidePane, ISidePaneConfig, withSidePane, SidePaneConsumer } from "../context/SidePaneContext";
+import { ZestLayoutDepthProvider, useZestLayoutDepth } from "../context/ZestLayoutDepthContext";
 
 import type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener } from "../context/SidePaneContext";
 
@@ -62,6 +63,8 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
   const { stack, stackLength, closeSidePane } = useSidePane();
   const hasStack = stackLength > 0;
   const hasLocalSidePane = sidePane != null;
+  const layoutDepth = useZestLayoutDepth();
+  const showOwnSidePane = hasLocalSidePane && ((sidePane?.visible ?? false) || layoutDepth > 0);
 
   // --- Compat Layer / Deprecation Warnings ---
   useEffect(() => {
@@ -80,14 +83,14 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
     ? `${sidePane.widthRems}rem`
     : (sidePaneWidth || desktopSidePaneWidth || "25%");
 
-  const sidePaneVisible = hasLocalSidePane
+  const sidePaneVisible = showOwnSidePane
     ? (sidePane?.visible ?? false)
-    : hasStack;
+    : layoutDepth === 0 && hasStack;
 
   const handleCloseTop = () => {
-    if (hasLocalSidePane) {
+    if (showOwnSidePane) {
       sidePane?.onClose?.();
-    } else if (hasStack) {
+    } else if (layoutDepth === 0 && hasStack) {
       closeSidePane();
     }
   };
@@ -110,6 +113,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
   }, [sidePaneVisible, isMobile, enableDesktopOverlay]);
 
   return (
+    <ZestLayoutDepthProvider>
     <div
       className={`${styles.container} ${className || ""}`}
       style={style}
@@ -131,7 +135,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         aria-hidden="true"
       />
 
-      {hasLocalSidePane ? (
+      {showOwnSidePane ? (
         <SidePane
           ref={overlayRef}
           visible={sidePane.visible}
@@ -147,7 +151,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
           className={sidePane.className}
           style={sidePane.style}
         />
-      ) : hasStack ? (
+      ) : layoutDepth === 0 && hasStack ? (
         stack.map((config, index) => {
           const isTop = index === stackLength - 1;
           return (
@@ -172,6 +176,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         })
       ) : null}
     </div>
+    </ZestLayoutDepthProvider>
   );
 };
 
