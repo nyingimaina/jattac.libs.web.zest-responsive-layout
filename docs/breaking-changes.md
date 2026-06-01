@@ -6,6 +6,7 @@ A record of changes across major versions that may require manual intervention w
 
 ## Table of Contents
 
+- [Version 2.6.0 (Deprecated Prop Removal)](#version-260-deprecated-prop-removal)
 - [Version 2.5.0 (Return Values &amp; Subscription)](#version-250-return-values--subscription)
 - [Version 2.4.0 (Manual Provider Requirement)](#version-240-manual-provider-requirement)
 - [Version 2.3.1 (Mobile Outside Click Fix)](#version-231-mobile-outside-click-fix)
@@ -16,7 +17,63 @@ A record of changes across major versions that may require manual intervention w
 
 ---
 
-## Version 2.5.0 (Return Values & Subscription)
+## Version 2.6.0 (Deprecated Prop Removal)
+
+Version 2.6.0 removes all previously deprecated props. These have been emitting deprecation warnings since v2.0.0.
+
+### Removed: `detailPane`
+
+**Before (v2.5.x):**
+```tsx
+<ZestResponsiveLayout detailPane={<Content />} />
+```
+
+**After (v2.6.0):**
+```tsx
+<ZestResponsiveLayout>
+  <Content />
+</ZestResponsiveLayout>
+```
+
+### Removed: `sidePane.pane` and `sidePane.widthRems`
+
+**Before (v2.5.x):**
+```tsx
+<ZestResponsiveLayout
+  sidePane={{
+    pane: <Sidebar />,
+    widthRems: 20,
+  }}
+/>
+```
+
+**After (v2.6.0):**
+```tsx
+<ZestResponsiveLayout
+  sidePaneWidth="20rem"
+  sidePane={{
+    content: <Sidebar />,
+  }}
+/>
+```
+
+### Removed: `desktopSidePaneWidth`
+
+**Before (v2.5.x):**
+```tsx
+<ZestResponsiveLayout desktopSidePaneWidth="300px" />
+```
+
+**After (v2.6.0):**
+```tsx
+<ZestResponsiveLayout sidePaneWidth="300px" />
+```
+
+### Removed: `suppressNestedStackWarning`
+
+This prop has been a no-op since v2.5.2 and is now removed. Nested layout cycle prevention is handled automatically via depth tracking.
+
+---
 
 Version 2.5.0 adds Promise-based return values to `openSidePane` and an event subscription mechanism. This is a **backward-compatible** feature addition — no existing code breaks.
 

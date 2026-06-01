@@ -18,8 +18,8 @@ Technical specifications for the `ZestResponsiveLayout` component.
 
 | Prop | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `children` | `React.ReactNode` | Required | The primary content area. Replaces the deprecated `detailPane` prop. |
-| `sidePane` | `object` | `{ visible: false }` | Configuration for a single side pane. See [Side Pane Configuration](#side-pane-configuration). |
+| `children` | `React.ReactNode` | Required | The primary content area. |
+| `sidePane` | `object` | `undefined` | Configuration for a single side pane. See [Side Pane Configuration](#side-pane-configuration). |
 | `sidePaneWidth` | `string` | `"25%"` | Width of the side pane on desktop (e.g., `"300px"`, `"30%"`). |
 | `className` | `string` | `undefined` | Custom CSS class applied to the root layout container. |
 | `style` | `React.CSSProperties` | `undefined` | Custom inline styles applied to the root layout container. |
@@ -27,9 +27,6 @@ Technical specifications for the `ZestResponsiveLayout` component.
 | `mobileBreakpointPx` | `number` | `768` | Viewport width threshold at which the layout switches to mobile mode. |
 | `enableDesktopOverlay` | `boolean` | `true` | Renders a dimming overlay over the main content when the side pane is open on desktop. |
 | `closeOnDesktopOverlayClick` | `boolean` | `false` | When `true`, clicking the desktop overlay closes the side pane. |
-| `detailPane` | `React.ReactNode` | `undefined` | **Deprecated.** Use `children` instead. |
-| `desktopSidePaneWidth` | `string` | `undefined` | **Deprecated.** Use `sidePaneWidth` instead. |
-| `desktopDetailPaneWidth` | `string` | `undefined` | **Deprecated.** Not applicable - the content pane fills remaining space. |
 
 ---
 
@@ -40,14 +37,12 @@ The `sidePane` prop accepts an object with the following properties:
 | Prop | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `visible` | `boolean` | Required | Controls the visibility of the side pane. |
-| `content` | `React.ReactNode` | Required | The content rendered inside the side pane. |
+| `content` | `React.ReactNode` | `undefined` | The content rendered inside the side pane. |
 | `title` | `React.ReactNode` | `undefined` | Text or element displayed in the side pane header. |
 | `onClose` | `() => void` | `undefined` | Callback invoked when the close button is clicked or the side pane is dismissed. |
 | `keepMounted` | `boolean` | `false` | When `true`, the side pane content remains in the DOM when hidden. Useful for preserving form state. |
 | `className` | `string` | `undefined` | Custom CSS class applied to the side pane element. |
 | `style` | `React.CSSProperties` | `undefined` | Custom inline styles applied to the side pane element. |
-| `pane` | `React.ReactNode` | `undefined` | **Deprecated.** Use `content` instead. |
-| `widthRems` | `number` | `undefined` | **Deprecated.** Use `sidePaneWidth` instead. |
 
 ---
 
@@ -325,6 +320,7 @@ interface IProps {
     style?: React.CSSProperties;
   };
   sidePaneWidth?: string;
+  desktopDetailPaneWidth?: string;
   className?: string;
   style?: React.CSSProperties;
   enableBounceAnimation?: boolean;

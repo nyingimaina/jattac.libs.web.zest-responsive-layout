@@ -26,12 +26,7 @@ The side pane width on desktop is controlled via the `sidePaneWidth` prop. The m
 </ZestResponsiveLayout>
 ```
 
-**Prop Precedence:**
-
-1. `sidePane.widthRems` (deprecated) — calculates `rem` units from a numeric value; overrides other width props.
-2. `sidePaneWidth` (preferred) — accepts any valid CSS length (`"300px"`, `"30%"`, `"20vw"`).
-3. `desktopSidePaneWidth` (deprecated) — fallback if `sidePaneWidth` is not set.
-4. Default value of `"25%"` is used when none of the above are specified.
+**Prop:** `sidePaneWidth` accepts any valid CSS length (`"300px"`, `"30%"`, `"20vw"`). Defaults to `"25%"`.
 
 ---
 

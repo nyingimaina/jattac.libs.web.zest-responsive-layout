@@ -3,20 +3,16 @@ import { SidePaneProvider, useSidePane, ISidePaneConfig, withSidePane, SidePaneC
 import type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SidePaneListener } from "../context/SidePaneContext";
 export interface IProps {
     children?: React.ReactNode;
-    detailPane?: React.ReactNode;
     sidePane?: {
         visible: boolean;
         content?: React.ReactNode;
-        pane?: React.ReactNode;
         title?: React.ReactNode;
         onClose?: () => void;
         keepMounted?: boolean;
-        widthRems?: number;
         className?: string;
         style?: React.CSSProperties;
     };
     sidePaneWidth?: string;
-    desktopSidePaneWidth?: string;
     desktopDetailPaneWidth?: string;
     enableBounceAnimation?: boolean;
     mobileBreakpointPx?: number;

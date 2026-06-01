@@ -12,22 +12,18 @@ import type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SideP
 
 export interface IProps {
   children?: React.ReactNode;
-  detailPane?: React.ReactNode;
 
   sidePane?: {
     visible: boolean;
     content?: React.ReactNode;
-    pane?: React.ReactNode;
     title?: React.ReactNode;
     onClose?: () => void;
     keepMounted?: boolean;
-    widthRems?: number;
     className?: string;
     style?: React.CSSProperties;
   };
 
   sidePaneWidth?: string;
-  desktopSidePaneWidth?: string;
   desktopDetailPaneWidth?: string;
 
   enableBounceAnimation?: boolean;
@@ -45,10 +41,8 @@ export type { SidePaneContextValue, WithSidePaneProps, SidePaneCloseEvent, SideP
 
 export const ZestResponsiveLayout: React.FC<IProps> = ({
   children,
-  detailPane,
   sidePane,
-  sidePaneWidth,
-  desktopSidePaneWidth,
+  sidePaneWidth = "25%",
   desktopDetailPaneWidth,
   enableBounceAnimation = true,
   mobileBreakpointPx = 768,
@@ -65,23 +59,6 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
   const hasLocalSidePane = sidePane != null;
   const layoutDepth = useZestLayoutDepth();
   const showOwnSidePane = hasLocalSidePane && ((sidePane?.visible ?? false) || layoutDepth > 0);
-
-  // --- Compat Layer / Deprecation Warnings ---
-  useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
-      if (detailPane) console.warn("[Zest] 'detailPane' is deprecated. Use 'children' instead.");
-      if (sidePane?.pane) console.warn("[Zest] 'sidePane.pane' is deprecated. Use 'sidePane.content' instead.");
-      if (desktopSidePaneWidth) console.warn("[Zest] 'desktopSidePaneWidth' is deprecated. Use 'sidePaneWidth' instead.");
-      if (sidePane?.widthRems) console.warn("[Zest] 'sidePane.widthRems' is deprecated. Use 'sidePaneWidth' instead.");
-    }
-  }, [detailPane, sidePane?.pane, desktopSidePaneWidth, sidePane?.widthRems]);
-
-  // --- Prop Aliasing (Polyfill) ---
-  const finalContent = children || detailPane;
-  const sideContent = sidePane?.content || sidePane?.pane;
-  const sideWidth = sidePane?.widthRems
-    ? `${sidePane.widthRems}rem`
-    : (sidePaneWidth || desktopSidePaneWidth || "25%");
 
   const sidePaneVisible = showOwnSidePane
     ? (sidePane?.visible ?? false)
@@ -121,12 +98,12 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
       <DetailPane
         isMobile={isMobile}
         isSidePaneVisible={sidePaneVisible}
-        sideWidth={sideWidth}
+        sideWidth={sidePaneWidth}
         desktopDetailPaneWidth={desktopDetailPaneWidth}
         hydrated={hydrated}
         enableDesktopOverlay={enableDesktopOverlay}
       >
-        {finalContent}
+        {children}
       </DetailPane>
 
       <div
@@ -139,7 +116,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         <SidePane
           ref={overlayRef}
           visible={sidePane.visible}
-          pane={sideContent}
+          pane={sidePane.content}
           title={sidePane.title}
           onClose={sidePane.onClose}
           keepMounted={sidePane.keepMounted}
@@ -147,7 +124,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
           enableBounceAnimation={enableBounceAnimation}
           enableDesktopOverlay={enableDesktopOverlay}
           hydrated={hydrated}
-          sideWidth={sideWidth}
+          sideWidth={sidePaneWidth}
           className={sidePane.className}
           style={sidePane.style}
         />
@@ -167,7 +144,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
               enableBounceAnimation={enableBounceAnimation}
               enableDesktopOverlay={enableDesktopOverlay}
               hydrated={hydrated}
-              sideWidth={sideWidth}
+              sideWidth={sidePaneWidth}
               preservePositionOnHide={true}
               className={config.className}
               style={config.style}
