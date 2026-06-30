@@ -18,6 +18,8 @@ interface IProps {
         onClose?: () => void;
         keepMounted?: boolean;
         dismissOnEsc?: boolean;
+        dismissOnBack?: boolean;
+        nonModal?: boolean;
         /** @legacy Use sidePaneWidth. */
         widthRems?: number;
         className?: string;

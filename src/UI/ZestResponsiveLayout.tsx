@@ -25,6 +25,8 @@ export interface IProps {
     onClose?: () => void;
     keepMounted?: boolean;
     dismissOnEsc?: boolean;
+    dismissOnBack?: boolean;
+    nonModal?: boolean;
     /** @legacy Use sidePaneWidth. */
     widthRems?: number;
     className?: string;
@@ -96,12 +98,12 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
   );
 
   const handleOverlayClick = () => {
-    if (closeOnDesktopOverlayClick) {
+    if (!sidePane.nonModal) {
       sidePane.onClose?.();
     }
   };
 
-  const showOverlay = !isMobile && sidePane.visible && enableDesktopOverlay;
+  const showOverlay = !isMobile && sidePane.visible && enableDesktopOverlay && !sidePane.nonModal;
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" && sidePane.visible && !isMobile && !enableDesktopOverlay) {
@@ -124,6 +126,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         desktopDetailPaneWidth={desktopDetailPaneWidth}
         hydrated={hydrated}
         enableDesktopOverlay={enableDesktopOverlay}
+        nonModal={sidePane.nonModal}
       >
         {finalContent}
       </DetailPane>
@@ -142,6 +145,7 @@ export const ZestResponsiveLayout: React.FC<IProps> = ({
         onClose={sidePane.onClose}
         keepMounted={sidePane.keepMounted}
         dismissOnEsc={sidePane.dismissOnEsc}
+        dismissOnBack={sidePane.dismissOnBack}
         isMobile={isMobile}
         enableBounceAnimation={enableBounceAnimation}
         enableDesktopOverlay={enableDesktopOverlay}

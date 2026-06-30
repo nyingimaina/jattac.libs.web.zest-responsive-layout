@@ -9,6 +9,7 @@ interface DetailPaneProps {
   isMobile: boolean;
   isSidePaneVisible: boolean;
   enableDesktopOverlay: boolean;
+  nonModal?: boolean;
 }
 
 export const DetailPane: React.FC<DetailPaneProps> = ({
@@ -19,6 +20,7 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
   isMobile,
   isSidePaneVisible,
   enableDesktopOverlay,
+  nonModal = false,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -33,6 +35,14 @@ export const DetailPane: React.FC<DetailPaneProps> = ({
       el.removeAttribute("aria-hidden");
     }
   }, [isSidePaneVisible]);
+
+  useEffect(() => {
+    if (!nonModal) return;
+    const el = ref.current;
+    if (!el) return;
+    el.removeAttribute("inert");
+    el.removeAttribute("aria-hidden");
+  }, [nonModal, isSidePaneVisible]);
 
   return (
     <div

@@ -7,6 +7,7 @@ interface DetailPaneProps {
     isMobile: boolean;
     isSidePaneVisible: boolean;
     enableDesktopOverlay: boolean;
+    nonModal?: boolean;
 }
 export declare const DetailPane: React.FC<DetailPaneProps>;
 export {};

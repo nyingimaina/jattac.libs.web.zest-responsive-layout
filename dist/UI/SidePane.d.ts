@@ -13,6 +13,7 @@ interface SidePaneProps {
     className?: string;
     style?: React.CSSProperties;
     dismissOnEsc?: boolean;
+    dismissOnBack?: boolean;
 }
 export declare const SidePane: React.ForwardRefExoticComponent<SidePaneProps & React.RefAttributes<HTMLDivElement>>;
 export {};

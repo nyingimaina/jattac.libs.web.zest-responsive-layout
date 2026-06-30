@@ -26,7 +26,7 @@ export default [
       resolve(),
       typescript({
         tsconfig: './tsconfig.json',
-        // Removed outDir and declarationDir from here, will be managed by tsconfig.json and Rollup
+        exclude: ['**/__tests__/**', '**/*.test.tsx', '**/*.test.ts'],
       }),
       postcss({
         modules: true, // Enable CSS modules

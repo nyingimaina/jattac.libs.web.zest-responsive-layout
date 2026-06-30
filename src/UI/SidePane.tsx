@@ -16,6 +16,7 @@ interface SidePaneProps {
   className?: string;
   style?: React.CSSProperties;
   dismissOnEsc?: boolean;
+  dismissOnBack?: boolean;
 }
 
 export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
@@ -34,11 +35,13 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       className,
       style,
       dismissOnEsc = true,
+      dismissOnBack = true,
     },
     ref
   ) => {
     const isDesktop = !isMobile;
     const { position, isDragging, dragHandleProps, resetPosition, elementRef } = useDraggable(isDesktop);
+    const entryPushedRef = React.useRef(false);
 
     // Reset position when it closes to avoid opening in a weird place
     useEffect(() => {
@@ -55,6 +58,24 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       document.addEventListener("keydown", handler);
       return () => document.removeEventListener("keydown", handler);
     }, [visible, dismissOnEsc, onClose]);
+
+    useEffect(() => {
+      if (!visible || !dismissOnBack || !isMobile) return;
+      history.pushState(null, '');
+      entryPushedRef.current = true;
+      const onPopState = () => {
+        entryPushedRef.current = false;
+        onClose?.();
+      };
+      window.addEventListener('popstate', onPopState);
+      return () => {
+        window.removeEventListener('popstate', onPopState);
+        if (entryPushedRef.current) {
+          entryPushedRef.current = false;
+          history.back();
+        }
+      };
+    }, [visible, dismissOnBack, isMobile, onClose]);
 
     // Handle multiple refs (the forwarded ref and the internal draggable ref)
     const setRefs = useCallback(
