@@ -10,6 +10,7 @@ interface SidePaneProps {
     enableDesktopOverlay: boolean;
     hydrated: boolean;
     sideWidth: string;
+    preservePositionOnHide?: boolean;
     className?: string;
     style?: React.CSSProperties;
     dismissOnEsc?: boolean;

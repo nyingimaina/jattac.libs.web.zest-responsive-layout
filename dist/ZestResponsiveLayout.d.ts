@@ -1,51 +1,69 @@
 import React from 'react';
 
+interface ISidePaneConfig {
+    content: React.ReactNode;
+    title?: React.ReactNode;
+    onClose?: () => void;
+    keepMounted?: boolean;
+    className?: string;
+    style?: React.CSSProperties;
+}
+interface InternalConfig extends ISidePaneConfig {
+    _id: string;
+}
+interface SidePaneCloseEvent {
+    paneId: string;
+    result: unknown;
+}
+type SidePaneListener = (event: SidePaneCloseEvent) => void;
+interface SidePaneContextValue {
+    openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+    closeSidePane: <TResult = unknown>(result?: TResult) => void;
+    subscribe: (listener: SidePaneListener) => () => void;
+    stack: InternalConfig[];
+    stackLength: number;
+}
+declare const SidePaneProvider: React.FC<{
+    children: React.ReactNode;
+}>;
+declare const useSidePane: () => SidePaneContextValue;
+interface WithSidePaneProps {
+    openSidePane: <TResult = unknown>(config: ISidePaneConfig) => Promise<TResult>;
+    closeSidePane: <TResult = unknown>(result?: TResult) => void;
+    subscribe: (listener: SidePaneListener) => () => void;
+    stackLength: number;
+}
+declare function withSidePane<P extends WithSidePaneProps>(Component: React.ComponentType<P>): React.FC<Omit<P, keyof WithSidePaneProps>>;
+interface SidePaneConsumerProps {
+    children: (value: SidePaneContextValue) => React.ReactNode;
+}
+declare const SidePaneConsumer: React.FC<SidePaneConsumerProps>;
+
 interface IProps {
-    /**
-     * Main content area.
-     * @preferred Use children instead of detailPane.
-     */
     children?: React.ReactNode;
-    /** @deprecated Use children. */
-    detailPane?: React.ReactNode;
-    sidePane: {
+    sidePane?: {
         visible: boolean;
-        /** Sidebar content. @preferred Use content instead of pane. */
         content?: React.ReactNode;
-        /** @deprecated Use content. */
-        pane?: React.ReactNode;
         title?: React.ReactNode;
         onClose?: () => void;
         keepMounted?: boolean;
         dismissOnEsc?: boolean;
         dismissOnBack?: boolean;
         nonModal?: boolean;
-        /** @legacy Use sidePaneWidth. */
-        widthRems?: number;
         className?: string;
         style?: React.CSSProperties;
     };
-    /** Preferred way to set sidebar width (e.g., '300px', '25%'). */
     sidePaneWidth?: string;
-    /** @deprecated Use sidePaneWidth. */
-    desktopSidePaneWidth?: string;
-    /** @deprecated Use Flexbox properties or container styling instead. */
     desktopDetailPaneWidth?: string;
     enableBounceAnimation?: boolean;
     mobileBreakpointPx?: number;
     enableDesktopOverlay?: boolean;
     closeOnDesktopOverlayClick?: boolean;
-    /** Custom class for the root container. */
     className?: string;
-    /** Custom style for the root container. */
     style?: React.CSSProperties;
 }
-/**
- * ZestResponsiveLayout (v2.0.0)
- * A highly performant responsive layout with a dynamic side pane.
- * Now supports standard React 'children' and improved styling hooks.
- */
+
 declare const ZestResponsiveLayout: React.FC<IProps>;
 
-export { ZestResponsiveLayout };
-export type { IProps };
+export { SidePaneConsumer, SidePaneProvider, ZestResponsiveLayout, useSidePane, withSidePane };
+export type { IProps, ISidePaneConfig, SidePaneCloseEvent, SidePaneContextValue, SidePaneListener, WithSidePaneProps };

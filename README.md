@@ -1,54 +1,119 @@
-# Zest Responsive Layout 🍋
+# Zest Responsive Layout
 
-### Building buttery-smooth, responsive React layouts has never been easier.
+A high-performance React component for building responsive layouts with a dynamic side pane and main content area. Handles responsive behavior, animations, desktop overlays, and nested side pane management.
 
-Zest Responsive Layout is a high-performance React component designed to solve the common challenge of creating consistent, professional layouts with a dynamic side pane and main content area. It handles the heavy lifting of responsive behavior, animations, and desktop overlays, so you can focus on building your features.
+---
 
-### Key Features
-*   🚀 **Performance First:** Optimized with GPU-accelerated transforms to ensure 60fps animations.
-*   📱 **Seamless Responsiveness:** Intelligent mobile-to-desktop transitions with a configurable breakpoint.
-*   ✨ **Playful UX:** Built-in bounce animations and desktop overlays for a modern, "zesty" feel.
-*   🛠️ **Highly Configurable:** Complete control over widths, visibility, and interaction behavior.
-*   📦 **Lightweight & Type-Safe:** Zero-bloat implementation with full TypeScript support.
+## Key Features
 
-### Installation
+- **Performance-First Architecture:** GPU-accelerated CSS transforms ensure consistent 60fps animations.
+- **Responsive by Default:** Intelligent mobile-to-desktop transitions with a configurable breakpoint (default 768px).
+- **Nested Side Pane Management:** Built-in side pane stacking via a context-driven API. Consumers can push and pop side panes without data loss or UI cramping.
+- **Desktop Overlay System:** Optional dimming overlay with configurable click-to-close behavior.
+- **Type-Safe:** Full TypeScript support with exported interfaces.
+
+---
+
+## Installation
 
 ```bash
 npm install jattac.libs.web.zest-responsive-layout
 ```
 
-### Basic Usage ("Hello World")
+---
 
-Get a professional layout up and running in seconds:
+## Table of Contents
 
-```tsx
-import { ZestResponsiveLayout } from 'jattac.libs.web.zest-responsive-layout';
-
-const App = () => (
-  <ZestResponsiveLayout
-    sidePane={{
-      visible: true,
-      title: "Navigation",
-      content: <nav>My Sidebar Content</nav>
-    }}
-  >
-    <main>My Main Application Content</main>
-  </ZestResponsiveLayout>
-);
-```
-
-### Next Steps
-
-Ready to dive deeper? Explore our documentation:
-
-1.  **[The Cookbook (Examples)](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/examples.md)** - **Start here!** Learn by building practical recipes.
-2.  [Features Showcase](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/features.md) - See what else Zest can do.
-3.  [API Reference](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/api.md) - Technical specifications and prop tables.
-4.  [Configuration](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/configuration.md) - Deep-dive into customization.
-5.  [Development Guide](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/development.md) - For contributors and advanced users.
-6.  [Breaking Changes (Migration Guide)](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/breaking-changes.md) - Upgrading from v1 to v2.
-7.  **[Bug Fixes](./conductor/fixes.md)** - History of resolved issues.
+- [Key Features](#key-features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Class Component Support](#class-component-support)
+- [Documentation](#documentation)
 
 ---
 
-[Next: The Cookbook (Examples) →](https://github.com/nyingimaina/jattac.libs.web.zest-responsive-layout/blob/master/docs/examples.md)
+## Class Component Support
+
+Class components can access the side pane stack API via the `withSidePane` higher-order component or the `SidePaneConsumer` render-prop component. Full documentation is available in the [API Reference](docs/api.md#class-component-support).
+
+### withSidePane HOC
+
+```tsx
+import { withSidePane, SidePaneProvider, WithSidePaneProps } from 'jattac.libs.web.zest-responsive-layout';
+import React from 'react';
+
+interface MyProps extends WithSidePaneProps {}
+
+class MyComponent extends React.Component<MyProps> {
+  render() {
+    return (
+      <button onClick={() => this.props.openSidePane({ content: <div>Content</div> })}>
+        Open (stack: {this.props.stackLength})
+      </button>
+    );
+  }
+}
+
+export default withSidePane(MyComponent);
+```
+
+### SidePaneConsumer (render-prop)
+
+```tsx
+import { SidePaneConsumer } from 'jattac.libs.web.zest-responsive-layout';
+
+class MyComponent extends React.Component {
+  render() {
+    return (
+      <SidePaneConsumer>
+        {({ openSidePane, stackLength }) => (
+          <button onClick={() => openSidePane({ content: <div>Content</div> })}>
+            Open (stack: {stackLength})
+          </button>
+        )}
+      </SidePaneConsumer>
+    );
+  }
+}
+```
+
+---
+
+## Quick Start
+
+> **v2.4.0:** `SidePaneProvider` must now be wrapped manually at the app root if using the stack API (`useSidePane`, `withSidePane`, `SidePaneConsumer`). If you only use the `sidePane` prop, the provider is optional. See [Breaking Changes](docs/breaking-changes.md#version-240-manual-provider-requirement).
+
+```tsx
+import { ZestResponsiveLayout, SidePaneProvider } from 'jattac.libs.web.zest-responsive-layout';
+import { useState } from 'react';
+
+const App = () => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <SidePaneProvider>
+      <ZestResponsiveLayout
+        sidePane={{
+          visible: isOpen,
+          title: "Navigation",
+          content: <nav>Sidebar Content</nav>,
+          onClose: () => setIsOpen(false)
+        }}
+      >
+        <main>Main Application Content</main>
+      </ZestResponsiveLayout>
+    </SidePaneProvider>
+  );
+};
+```
+
+---
+
+## Documentation
+
+1. **[API Reference](docs/api.md)** - Prop specifications and type definitions.
+2. **[Examples](docs/examples.md)** - Common usage patterns, including side pane stacking.
+3. **[Features](docs/features.md)** - Detailed feature descriptions.
+4. **[Configuration](docs/configuration.md)** - Customization and advanced setup.
+5. **[Development Guide](docs/development.md)** - Contribution and build instructions.
+6. **[Breaking Changes](docs/breaking-changes.md)** - Migration between major versions.

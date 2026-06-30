@@ -1,47 +1,73 @@
-# Contributor's Guide 🛠️
+# Development Guide
 
-Interested in improving Zest? Here is how to get started.
-
-### Table of Contents
-*   [Project Architecture](#project-architecture)
-*   [Local Setup](#local-setup)
-*   [Available Scripts](#available-scripts)
+Build, contribution, and architecture documentation for the `ZestResponsiveLayout` library.
 
 ---
 
-[← Previous: Configuration](./configuration.md) | [Next: Breaking Changes →](./breaking-changes.md)
+## Table of Contents
+
+- [Project Architecture](#project-architecture)
+- [Local Setup](#local-setup)
+- [Available Scripts](#available-scripts)
+- [Build Output](#build-output)
 
 ---
 
-### Project Architecture
-Zest is built with React, TypeScript, and CSS Modules.
+## Project Architecture
 
-*   `src/UI/`: Contains the main components (`ZestResponsiveLayout`, `SidePane`, `DetailPane`).
-*   `src/hooks/`: Custom logic for hydration, mobile detection, and outside-click handling.
-*   `src/Styles/`: Scoped CSS styles using CSS Modules.
+The library is built with React, TypeScript, and CSS Modules.
 
----
-
-### Local Setup
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/Jattac/jattac.libs.web.zest-responsive-layout.git
-    cd jattac.libs.web.zest-responsive-layout
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Build the project:**
-    ```bash
-    npm run build
-    ```
+```
+src/
+  UI/
+    ZestResponsiveLayout.tsx   - Root layout component (public API)
+    SidePane.tsx               - Side pane renderer
+    DetailPane.tsx             - Main content container
+  context/
+    SidePaneContext.tsx        - Side pane stack provider and hook
+  hooks/
+    useDraggable.ts            - Desktop drag repositioning logic
+    useIsHydrated.ts           - SSR hydration guard
+    useIsMobile.ts             - Responsive breakpoint detection
+  Styles/
+    ZestResponsiveLayout.module.css  - Scoped CSS styles
+  types/
+    css.d.ts                   - CSS module type declarations
+```
 
 ---
 
-### Available Scripts
-*   `npm run build`: Compiles the source code into `dist/` using Rollup. Generates ESM, CJS, and Type definitions.
+## Local Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Jattac/jattac.libs.web.zest-responsive-layout.git
+   cd jattac.libs.web.zest-responsive-layout
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Build the project:
+   ```bash
+   npm run build
+   ```
 
 ---
 
-[← Previous: Configuration](./configuration.md) | [Next: Breaking Changes →](./breaking-changes.md)
+## Available Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `npm run build` | Compiles the source code into `dist/` using Rollup. Generates ESM, CJS, and TypeScript declaration files. |
+
+---
+
+## Build Output
+
+- `dist/ZestResponsiveLayout.js` — CommonJS bundle.
+- `dist/ZestResponsiveLayout.esm.js` — ES Module bundle.
+- `dist/ZestResponsiveLayout.d.ts` — TypeScript type declarations.
+- `dist/UI/` and `dist/hooks/` — Supporting type declaration files.

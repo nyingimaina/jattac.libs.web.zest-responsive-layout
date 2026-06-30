@@ -13,6 +13,7 @@ interface SidePaneProps {
   enableDesktopOverlay: boolean;
   hydrated: boolean;
   sideWidth: string;
+  preservePositionOnHide?: boolean;
   className?: string;
   style?: React.CSSProperties;
   dismissOnEsc?: boolean;
@@ -32,6 +33,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       enableDesktopOverlay,
       hydrated,
       sideWidth,
+      preservePositionOnHide = false,
       className,
       style,
       dismissOnEsc = true,
@@ -44,11 +46,12 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
     const entryPushedRef = React.useRef(false);
 
     // Reset position when it closes to avoid opening in a weird place
+    // preservePositionOnHide avoids this for stacked sidepanes
     useEffect(() => {
-      if (!visible) {
+      if (!visible && !preservePositionOnHide) {
         resetPosition();
       }
-    }, [visible, resetPosition]);
+    }, [visible, resetPosition, preservePositionOnHide]);
 
     useEffect(() => {
       if (!visible || !dismissOnEsc) return;

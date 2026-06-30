@@ -4,7 +4,16 @@ import { ZestResponsiveLayout } from "../UI/ZestResponsiveLayout";
 
 jest.mock("../hooks/useIsMobile", () => ({ useIsMobile: () => false }));
 jest.mock("../hooks/useIsHydrated", () => ({ useIsHydrated: () => true }));
-jest.mock("../hooks/useOutsideClick", () => ({ useOutsideClick: () => {} }));
+jest.mock("../context/SidePaneContext", () => ({
+  SidePaneProvider: ({ children }: { children: React.ReactNode }) => children,
+  useSidePane: () => ({ stack: [], stackLength: 0, closeSidePane: jest.fn() }),
+  withSidePane: (c: unknown) => c,
+  SidePaneConsumer: ({ children }: { children: (v: unknown) => React.ReactNode }) => children({}),
+}));
+jest.mock("../context/ZestLayoutDepthContext", () => ({
+  ZestLayoutDepthProvider: ({ children }: { children: React.ReactNode }) => children,
+  useZestLayoutDepth: () => 0,
+}));
 jest.mock("../hooks/useDraggable", () => ({
   useDraggable: () => ({
     position: { x: 0, y: 0 },
