@@ -12,6 +12,7 @@ interface SidePaneProps {
     sideWidth: string;
     className?: string;
     style?: React.CSSProperties;
+    dismissOnEsc?: boolean;
 }
 export declare const SidePane: React.ForwardRefExoticComponent<SidePaneProps & React.RefAttributes<HTMLDivElement>>;
 export {};

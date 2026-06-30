@@ -16,6 +16,7 @@ export interface IProps {
         title?: React.ReactNode;
         onClose?: () => void;
         keepMounted?: boolean;
+        dismissOnEsc?: boolean;
         /** @legacy Use sidePaneWidth. */
         widthRems?: number;
         className?: string;

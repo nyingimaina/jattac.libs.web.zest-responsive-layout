@@ -15,6 +15,7 @@ interface SidePaneProps {
   sideWidth: string;
   className?: string;
   style?: React.CSSProperties;
+  dismissOnEsc?: boolean;
 }
 
 export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
@@ -32,6 +33,7 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
       sideWidth,
       className,
       style,
+      dismissOnEsc = true,
     },
     ref
   ) => {
@@ -44,6 +46,15 @@ export const SidePane = forwardRef<HTMLDivElement, SidePaneProps>(
         resetPosition();
       }
     }, [visible, resetPosition]);
+
+    useEffect(() => {
+      if (!visible || !dismissOnEsc) return;
+      const handler = (e: KeyboardEvent) => {
+        if (e.key === "Escape") onClose?.();
+      };
+      document.addEventListener("keydown", handler);
+      return () => document.removeEventListener("keydown", handler);
+    }, [visible, dismissOnEsc, onClose]);
 
     // Handle multiple refs (the forwarded ref and the internal draggable ref)
     const setRefs = useCallback(
